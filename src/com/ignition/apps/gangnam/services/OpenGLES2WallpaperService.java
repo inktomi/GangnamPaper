@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.pm.ConfigurationInfo;
 import android.opengl.GLSurfaceView;
 import android.view.SurfaceHolder;
-import com.ignition.apps.gangnam.renderer.GangnamRenderer;
 
 public abstract class OpenGLES2WallpaperService extends GLWallpaperService {
     @Override
@@ -37,13 +36,6 @@ public abstract class OpenGLES2WallpaperService extends GLWallpaperService {
                 // renderer if you wanted to support both ES 1 and ES 2.
                 return;
             }
-        }
-    }
-
-    public class GangnamWallpaperService extends OpenGLES2WallpaperService {
-        @Override
-        GLSurfaceView.Renderer getNewRenderer() {
-            return new GangnamRenderer();
         }
     }
 }
