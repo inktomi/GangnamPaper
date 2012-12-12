@@ -10,6 +10,8 @@ public class GangnamRenderer implements GLSurfaceView.Renderer {
 
     public void onDrawFrame(GL10 gl) {
         // Your rendering code goes here
+        // Redraw background color
+        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
     }
 
     public void onSurfaceChanged(GL10 gl, int width, int height) {
