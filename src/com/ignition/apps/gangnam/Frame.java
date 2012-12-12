@@ -35,7 +35,7 @@ public class Frame {
 			1.0f, 1.0f,		// top right	(V4)
 			1.0f, 0.0f		// bottom right	(V3)
 	};
-	
+
 	/** The texture pointer */
 	private int[] textures = new int[1];
 

@@ -17,6 +17,9 @@ import javax.microedition.khronos.opengles.GL10;
 public class GlRenderer implements Renderer {
 
 	private Frame frame;		// the frame
+    private LeftDoor leftDoor;  // The Left Door
+    private RightDoor rightDoor; // The right door
+
 	private Context 	context;
 
     private int[] frames = new int[] {
@@ -68,6 +71,9 @@ public class GlRenderer implements Renderer {
             R.drawable.e98,
             R.drawable.e99,
     };
+
+    private int leftDoorTexture = R.drawable.door_left;
+    private int rightDoorTexture = R.drawable.door_right;
 	
 	/** Constructor to set the handed over context */
 	public GlRenderer(Context context) {
@@ -75,6 +81,10 @@ public class GlRenderer implements Renderer {
 		
 		// initialise the frame
 		this.frame = new Frame();
+
+        // initialise the left door
+        this.leftDoor = new LeftDoor();
+        this.rightDoor = new RightDoor();
 	}
 
 	@Override
@@ -92,6 +102,9 @@ public class GlRenderer implements Renderer {
 												// otherwise it will be too large
 		frame.draw(gl);						// Draw the triangle
 
+        gl.glTranslatef(0.0f, 0.0f, 2.0f);		// move 5 units INTO the screen
+        leftDoor.draw(gl);
+        rightDoor.draw(gl);
 	}
 
 	@Override
@@ -115,6 +128,8 @@ public class GlRenderer implements Renderer {
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 		// Load the texture for the frame
 		frame.loadGLTexture(gl, this.context, frames[0]);
+        leftDoor.loadGLTexture(gl, this.context, leftDoorTexture);
+        rightDoor.loadGLTexture(gl, this.context, rightDoorTexture);
 		
 		gl.glEnable(GL10.GL_TEXTURE_2D);			//Enable Texture Mapping ( NEW )
 		gl.glShadeModel(GL10.GL_SMOOTH); 			//Enable Smooth Shading
