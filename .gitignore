@@ -20,3 +20,6 @@ local.properties
 .project
 
 .idea
+
+# Design source files
+design/frames
