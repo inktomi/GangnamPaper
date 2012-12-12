@@ -23,3 +23,4 @@ local.properties
 
 # Design source files
 design/source/
+.DS_Store
