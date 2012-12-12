@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Gangnam</string>
+    <string name="app_name">Gangnam Wallpaper</string>
+    <string name="service_label">Gangnam Wallpaper</string>
+    <string name="description">A Gangnam Wallpaper using found video from a popular ecommerce company.</string>
 </resources>
