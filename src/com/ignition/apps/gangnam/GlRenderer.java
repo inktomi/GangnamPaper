@@ -22,6 +22,8 @@ public class GlRenderer implements Renderer {
 
 	private Context 	context;
 
+    private boolean isAnimating = Boolean.FALSE;
+
     private int[] frames = new int[] {
             R.drawable.e53,
             R.drawable.e54,
@@ -72,8 +74,15 @@ public class GlRenderer implements Renderer {
             R.drawable.e99,
     };
 
+    public void setAnimating(boolean animating) {
+        isAnimating = animating;
+    }
+
     private int leftDoorTexture = R.drawable.door_left;
     private int rightDoorTexture = R.drawable.door_right;
+
+    private float ldx = 0;
+    private float rdx = 0;
 	
 	/** Constructor to set the handed over context */
 	public GlRenderer(Context context) {
@@ -103,8 +112,28 @@ public class GlRenderer implements Renderer {
 		frame.draw(gl);						// Draw the triangle
 
         gl.glTranslatef(0.0f, 0.0f, 2.0f);		// move 5 units INTO the screen
-        leftDoor.draw(gl);
-        rightDoor.draw(gl);
+
+
+        if( isAnimating ){
+            gl.glTranslatef(ldx, 0.0f, 0.0f);
+
+            leftDoor.draw(gl);
+
+            gl.glTranslatef(0.0f, 0.0f, 0.0f);
+            gl.glTranslatef(rdx, 0.0f, 0.0f);
+
+            rightDoor.draw(gl);
+
+            ldx = ldx - 0.1f;
+            rdx = rdx + 0.1f;
+
+            if( ldx > 2 && rdx > 2 ){
+                isAnimating = Boolean.FALSE;
+            }
+        } else {
+            leftDoor.draw(gl);
+            rightDoor.draw(gl);
+        }
 	}
 
 	@Override

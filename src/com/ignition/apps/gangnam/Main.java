@@ -1,7 +1,6 @@
 package com.ignition.apps.gangnam;
 
 import android.app.Activity;
-import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
@@ -9,7 +8,7 @@ import android.view.WindowManager;
 public class Main extends Activity {
 	
 	/** The OpenGL view */
-	private GLSurfaceView glSurfaceView;
+	private GangnamSurfaceView glSurfaceView;
 	
     /** Called when the activity is first created. */
     @Override
@@ -24,11 +23,8 @@ public class Main extends Activity {
 
         // Initiate the Open GL view and
         // create an instance with this activity
-        glSurfaceView = new GLSurfaceView(this);
-        
-        // set our renderer to be the main renderer with
-        // the current activity context
-        glSurfaceView.setRenderer(new GlRenderer(this));
+        glSurfaceView = new GangnamSurfaceView(this);
+
         setContentView(glSurfaceView);
     }
 
