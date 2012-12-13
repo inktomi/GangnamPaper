@@ -13,6 +13,7 @@ import java.nio.FloatBuffer;
 public abstract class Shape {
 
     abstract public float[] getVertices();
+    abstract public int[] getTextures();
 
     private FloatBuffer vertexBuffer;	// buffer holding the vertices
     private FloatBuffer textureBuffer;	// buffer holding the texture coordinates
@@ -75,7 +76,7 @@ public abstract class Shape {
         gl.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
     }
 
-    public void loadGLTextures(GL10 gl, Context context, int... drawableResIds) {
+    private void loadGLTextures(GL10 gl, Context context, int... drawableResIds) {
 
         // initialize textures pointer
         textures = new int[drawableResIds.length];
@@ -105,5 +106,9 @@ public abstract class Shape {
             // Clean up
             bitmap.recycle();
         }
+    }
+
+    public void initializeTextures(GL10 gl, Context context) {
+        loadGLTextures(gl, context, getTextures());
     }
 }
