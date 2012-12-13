@@ -8,12 +8,12 @@ import android.view.MotionEvent;
 public class GangnamSurfaceView extends GLSurfaceView {
 
     private GestureDetector mGestureDetector;
-    private GlRenderer mGlRenderer;
+    private GangnamRenderer mGlRenderer;
 
     public GangnamSurfaceView(Context context) {
         super(context);
 
-        mGlRenderer = new GlRenderer(context);
+        mGlRenderer = new GangnamRenderer(context);
 
         mGestureDetector = new GestureDetector(new GestureDetector.SimpleOnGestureListener() {
             public void onLongPress(MotionEvent e) {

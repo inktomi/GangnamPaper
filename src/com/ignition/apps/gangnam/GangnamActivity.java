@@ -5,27 +5,21 @@ import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
 
-public class Main extends Activity {
+public class GangnamActivity extends Activity {
 	
 	/** The OpenGL view */
-	private GangnamSurfaceView glSurfaceView;
+	private GangnamSurfaceView mSurfaceView;
 	
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        // requesting to turn the title OFF
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        // making it full screen
-		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-				WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
         // Initiate the Open GL view and
         // create an instance with this activity
-        glSurfaceView = new GangnamSurfaceView(this);
+        mSurfaceView = new GangnamSurfaceView(this);
 
-        setContentView(glSurfaceView);
+        setContentView(mSurfaceView);
     }
 
 	/**
@@ -34,7 +28,7 @@ public class Main extends Activity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		glSurfaceView.onResume();
+		mSurfaceView.onResume();
 	}
 
 	/**
@@ -43,7 +37,7 @@ public class Main extends Activity {
 	@Override
 	protected void onPause() {
 		super.onPause();
-		glSurfaceView.onPause();
+		mSurfaceView.onPause();
 	}
 
 }

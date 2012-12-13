@@ -14,25 +14,30 @@ import javax.microedition.khronos.opengles.GL10;
  * @author impaler
  *
  */
-public class GlRenderer implements Renderer {
+public class GangnamRenderer implements Renderer {
 
-    private static final String TAG = GlRenderer.class.getName();
+    private static final String TAG = GangnamRenderer.class.getName();
+    private static final long ANIMATION_DURATION = 5000;
 
-	private ElevatorInterior frame;		// the frame
-    private LeftDoor leftDoor;  // The Left Door
-    private RightDoor rightDoor; // The right door
-
-	private Context 	context;
+    private Context 	context;
 
     private boolean isClosing = Boolean.FALSE;
     private boolean isAnimating = Boolean.FALSE;
-    private long animationDuration = 5000;
     private long animationStartTime;
 
-    private int[] frames = new int[] {
-            R.drawable.e39,
-            R.drawable.e40,
-            R.drawable.e41,
+    // doors
+    private LeftDoor leftDoor;
+    private RightDoor rightDoor;
+    private float leftDoorX = 0;
+    private float rightDoorX = 0;
+    private int leftDoorTexture = R.drawable.door_left;
+    private int rightDoorTexture = R.drawable.door_right;
+
+    // elevator interior
+    private ElevatorInterior elevatorInterior;
+    private int lastElevatorInteriorFrame;
+    private long timeOfLastElevatorInteriorFrame;
+    private int[] elevatorInteriorFrames = new int[] {
             R.drawable.e42,
             R.drawable.e43,
             R.drawable.e44,
@@ -93,30 +98,22 @@ public class GlRenderer implements Renderer {
             R.drawable.e99,
     };
 
-    private int lastFrame;
-
-    public void setAnimating(boolean animating) {
-        isAnimating = animating;
-        animationStartTime = System.currentTimeMillis();
-    }
-
-    private int leftDoorTexture = R.drawable.door_left;
-    private int rightDoorTexture = R.drawable.door_right;
-
-    private float ldx = 0;
-    private float rdx = 0;
-	
 	/** Constructor to set the handed over context */
-	public GlRenderer(Context context) {
+	public GangnamRenderer(Context context) {
 		this.context = context;
 		
-		// initialise the frame
-		this.frame = new ElevatorInterior();
+		// initialise the elevator interior
+		this.elevatorInterior = new ElevatorInterior();
 
         // initialise the left door
         this.leftDoor = new LeftDoor();
         this.rightDoor = new RightDoor();
 	}
+
+    public void setAnimating(boolean animating) {
+        isAnimating = animating;
+        animationStartTime = System.currentTimeMillis();
+    }
 
 	@Override
 	public void onDrawFrame(GL10 gl) {
@@ -130,47 +127,50 @@ public class GlRenderer implements Renderer {
             // Drawing
             gl.glTranslatef(0.0f, 0.0f, -5.0f);
 
-            if (lastFrame < frames.length - 1) {
-                lastFrame++;
+            if (lastElevatorInteriorFrame < elevatorInteriorFrames.length - 1) {
+                if (System.currentTimeMillis() - timeOfLastElevatorInteriorFrame >= (1000/58)) {
+                    lastElevatorInteriorFrame++;
+                    timeOfLastElevatorInteriorFrame = System.currentTimeMillis();
+                }
             } else {
-                lastFrame = 0;
+                lastElevatorInteriorFrame = 0;
             }
 
-            frame.draw(gl, lastFrame);
+            elevatorInterior.draw(gl, lastElevatorInteriorFrame);
 
             gl.glTranslatef(0.0f, 0.0f, 2.0f);
 
-            gl.glTranslatef(ldx, 0.0f, 0.0f);
+            gl.glTranslatef(leftDoorX, 0.0f, 0.0f);
 
             leftDoor.draw(gl);
 
-            gl.glTranslatef(-ldx, 0.0f, 0.0f);
-            gl.glTranslatef(rdx, 0.0f, 0.0f);
+            gl.glTranslatef(-leftDoorX, 0.0f, 0.0f);
+            gl.glTranslatef(rightDoorX, 0.0f, 0.0f);
 
             rightDoor.draw(gl);
 
-            boolean isOpen = ldx <= -0.55 && rdx >= 0.55;
-            boolean isClosed = ldx >= 0 && rdx <= 0;
+            boolean isOpen = leftDoorX <= -0.55 && rightDoorX >= 0.55;
+            boolean isClosed = leftDoorX >= 0 && rightDoorX <= 0;
             if(isClosed) {
-                ldx = 0;
-                rdx = 0;
+                leftDoorX = 0;
+                rightDoorX = 0;
                 isAnimating = Boolean.FALSE;
                 isClosing = Boolean.FALSE;
             }
 
             if(isOpen) {
-                boolean shouldClose = System.currentTimeMillis() - animationStartTime >= animationDuration;
+                boolean shouldClose = System.currentTimeMillis() - animationStartTime >= ANIMATION_DURATION;
                 if (shouldClose) {
                     isClosing = Boolean.TRUE;
                 }
             }
 
             if(isClosing && !isClosed) {
-                ldx = ldx + 0.01f;
-                rdx = rdx - 0.01f;
+                leftDoorX = leftDoorX + 0.01f;
+                rightDoorX = rightDoorX - 0.01f;
             } else if (!isOpen) {
-                ldx = ldx - 0.01f;
-                rdx = rdx + 0.01f;
+                leftDoorX = leftDoorX - 0.01f;
+                rightDoorX = rightDoorX + 0.01f;
             }
 
         } else {
@@ -182,7 +182,7 @@ public class GlRenderer implements Renderer {
 
 	@Override
 	public void onSurfaceChanged(GL10 gl, int width, int height) {
-		if(height == 0) { 						//Prevent A Divide By Zero By
+		if (height == 0) { 						//Prevent A Divide By Zero By
 			height = 1; 						//Making Height Equal One
 		}
 
@@ -199,8 +199,8 @@ public class GlRenderer implements Renderer {
 
 	@Override
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-		// Load the texture for the frame
-		frame.loadGLTextures(gl, this.context, frames);
+
+		elevatorInterior.loadGLTextures(gl, this.context, elevatorInteriorFrames);
         leftDoor.loadGLTexture(gl, this.context, leftDoorTexture);
         rightDoor.loadGLTexture(gl, this.context, rightDoorTexture);
 		
