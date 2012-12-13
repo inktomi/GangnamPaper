@@ -91,7 +91,7 @@ public class GangnamWallpaperService extends WallpaperService {
                 @Override
                 public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
                     if (!mRenderer.isElevatorDoorsAnimating()) {
-                        mRenderer.newTextMessage();
+                        mRenderer.showDanceInterior();
                     }
                     return super.onFling(e1, e2, velocityX, velocityY);
                 }
