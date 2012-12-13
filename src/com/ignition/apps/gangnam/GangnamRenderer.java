@@ -110,7 +110,13 @@ public class GangnamRenderer implements Renderer {
     }
 
     public void newTextMessage() {
+        showDanceInterior();
+        hasNewTextMessage = true;
+    }
 
+    private void animateElevatorDoorsOpen() {
+        elevatorDoorsAnimating = true;
+        elevatorOpenStartTime = System.currentTimeMillis();
     }
 
     @Override
@@ -177,6 +183,14 @@ public class GangnamRenderer implements Renderer {
                     timeOfLastDanceInteriorFrame = System.currentTimeMillis();
                 }
                 danceInterior.draw(gl, lastDanceInteriorFrame);
+
+                if( hasNewTextMessage ){
+                    gl.glTranslatef(-0.50f, -1.0f, 0.0f);
+                    smsBadge.draw(gl);
+
+                    // Reset.
+                    gl.glTranslatef(0.50f, 1.0f, 0.0f);
+                }
             }
 
             gl.glTranslatef(leftDoorX, 0.0f, 0.0f);
