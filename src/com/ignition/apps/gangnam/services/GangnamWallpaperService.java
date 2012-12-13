@@ -1,9 +1,13 @@
 package com.ignition.apps.gangnam.services;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.opengl.GLSurfaceView;
 import android.service.wallpaper.WallpaperService;
+import android.util.Log;
 import android.util.Log;
 import android.view.*;
 import com.ignition.apps.gangnam.GangnamRenderer;
@@ -12,9 +16,41 @@ public class GangnamWallpaperService extends WallpaperService {
 
     private static final String TAG = GangnamWallpaperService.class.getName();
 
+    private BroadcastReceiver mBroadcastReceiever;
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+        final IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(ActionReceiver.SMS_ACTION);
+
+        mBroadcastReceiever = new ActionReceiver();
+
+        this.registerReceiver(mBroadcastReceiever, intentFilter);
+    }
+
     @Override
     public Engine onCreateEngine() {
         return new GLEngine();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        this.unregisterReceiver(mBroadcastReceiever);
+    }
+
+    class ActionReceiver extends BroadcastReceiver {
+        private static final String SMS_ACTION = "android.provider.Telephony.SMS_RECEIVED";
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals(SMS_ACTION)) {
+                Log.e("SMS!", "it worked");
+            }
+        }
     }
 
     public class GLEngine extends Engine {
