@@ -3,4 +3,9 @@
     <string name="app_name">Gangnam Wallpaper</string>
     <string name="service_label">Gangnam Wallpaper</string>
     <string name="description">A Gangnam Wallpaper using found video from a popular ecommerce company.</string>
+
+    <!-- Wallpaper Preferences -->
+    <string name="color_filter_key">color_filter</string>
+    <string name="color_filter_title">Elevator Color Overlay</string>
+    <string name="color_filter_summary">Select a color to overlay on top of the elevator.</string>
 </resources>
