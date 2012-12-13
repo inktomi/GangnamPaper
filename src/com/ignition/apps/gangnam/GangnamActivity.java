@@ -24,7 +24,7 @@ public class GangnamActivity extends Activity {
         mGestureDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
             public boolean onDoubleTapEvent(MotionEvent e) {
                 if (!mSurfaceView.getRenderer().isElevatorDoorsAnimating()) {
-                    mSurfaceView.getRenderer().openElevator();
+                    mSurfaceView.getRenderer().showElevatorInterior();
                 }
 
                 return super.onDoubleTapEvent(e);

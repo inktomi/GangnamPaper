@@ -10,13 +10,7 @@ public class GangnamSurfaceView extends GLSurfaceView {
 
     public GangnamSurfaceView(Context context) {
         super(context);
-
-        Display display = ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-        int rotation = display.getRotation();
-
-        boolean isLandscape = rotation == Surface.ROTATION_180 || rotation == Surface.ROTATION_270;
-        mGlRenderer = new GangnamRenderer(context, isLandscape);
-
+        mGlRenderer = new GangnamRenderer(context);
         setRenderer(mGlRenderer);
     }
 

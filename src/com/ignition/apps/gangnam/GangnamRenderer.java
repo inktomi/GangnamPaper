@@ -4,9 +4,11 @@
 package com.ignition.apps.gangnam;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.media.MediaPlayer;
 import android.opengl.GLSurfaceView.Renderer;
 import android.opengl.GLU;
+import android.util.Log;
 import com.ignition.apps.gangnam.shapes.BarnInterior;
 import com.ignition.apps.gangnam.shapes.ElevatorInterior;
 import com.ignition.apps.gangnam.shapes.LeftDoor;
@@ -22,12 +24,12 @@ import javax.microedition.khronos.opengles.GL10;
 public class GangnamRenderer implements Renderer {
 
     private static final String TAG = GangnamRenderer.class.getName();
-    private static final long ANIMATION_DURATION = 4000;
+    private static final long ELEVATOR_OPEN_ANIMATION_DURATION = 4000;
+    private static final long NEW_MESSAGE_ANIMATION_DURATION = 10000;
 
     private Context context;
     private MediaPlayer mMediaPlayer;
 
-    private boolean isLandscape = Boolean.FALSE;
     private boolean isClosing = Boolean.FALSE;
     private boolean elevatorDoorsAnimating = Boolean.FALSE;
     private long elevatorOpenStartTime;
@@ -40,6 +42,7 @@ public class GangnamRenderer implements Renderer {
 
     // elevator interior
     private ElevatorInterior elevatorInterior;
+    private boolean showElevatorInterior;
     private int lastElevatorInteriorFrame;
     private long timeOfLastElevatorInteriorFrame;
     private int currentElevatorInteriorAudioClip;
@@ -55,7 +58,7 @@ public class GangnamRenderer implements Renderer {
     };
 
 	/** Constructor to set the handed over context */
-	public GangnamRenderer(Context context, boolean isLandscape) {
+	public GangnamRenderer(Context context) {
 		this.context = context;
 		
 		// initialise the elevator interior
@@ -63,7 +66,6 @@ public class GangnamRenderer implements Renderer {
 
         // initialise the left door
         this.leftDoor = new LeftDoor();
-        this.leftDoor.setLandscape(isLandscape);
 
         // initialise the right door
         this.rightDoor = new RightDoor();
@@ -72,13 +74,22 @@ public class GangnamRenderer implements Renderer {
         this.barnInterior = new BarnInterior();
 	}
 
-    public void openElevator() {
+    public boolean isLandscape() {
+        return Configuration.ORIENTATION_LANDSCAPE == context.getResources().getConfiguration().orientation;
+    }
+
+    public void showElevatorInterior() {
         elevatorDoorsAnimating = true;
+        showElevatorInterior = true;
         elevatorOpenStartTime = System.currentTimeMillis();
     }
 
     public boolean isElevatorDoorsAnimating() {
         return elevatorDoorsAnimating;
+    }
+
+    public void newTextMessage() {
+
     }
 
     @Override
@@ -90,7 +101,7 @@ public class GangnamRenderer implements Renderer {
 		gl.glLoadIdentity();
 
         if(elevatorDoorsAnimating){
-            if (mMediaPlayer == null) {
+            if (mMediaPlayer == null && showElevatorInterior) {
                 mMediaPlayer = MediaPlayer.create(context, elevatorInteriorAudioClips[currentElevatorInteriorAudioClip]);
                 mMediaPlayer.start();
                 if (currentElevatorInteriorAudioClip < elevatorInteriorAudioClips.length - 1) {
@@ -103,24 +114,21 @@ public class GangnamRenderer implements Renderer {
             // Drawing
             gl.glTranslatef(0.0f, 0.0f, -5.0f);
 
-            if (lastElevatorInteriorFrame < elevatorInterior.getTextures().length - 1) {
-                if (System.currentTimeMillis() - timeOfLastElevatorInteriorFrame >= (1000/58)) {
-                    lastElevatorInteriorFrame++;
-                    timeOfLastElevatorInteriorFrame = System.currentTimeMillis();
+            // show elevator interior
+            if (showElevatorInterior) {
+                if (lastElevatorInteriorFrame < elevatorInterior.getTextures().length - 1) {
+                    if (System.currentTimeMillis() - timeOfLastElevatorInteriorFrame >= (1000/58)) {
+                        lastElevatorInteriorFrame++;
+                        timeOfLastElevatorInteriorFrame = System.currentTimeMillis();
+                    }
+                } else {
+                    lastElevatorInteriorFrame = 0;
                 }
-            } else {
-                lastElevatorInteriorFrame = 0;
+
+                elevatorInterior.draw(gl, lastElevatorInteriorFrame);
             }
 
-            elevatorInterior.draw(gl, lastElevatorInteriorFrame);
-
-            // We want the doors to be "closer" if we're in landscape mode.
-            if( isLandscape ){
-                gl.glTranslatef(0.0f, 0.0f, 1.0f);
-            } else {
-                gl.glTranslatef(0.0f, 0.0f, 1.9f);
-            }
-
+            gl.glTranslatef(0.0f, 0.0f, 0.0f);
             gl.glTranslatef(leftDoorX, 0.0f, 0.0f);
 
             leftDoor.draw(gl);
@@ -130,17 +138,18 @@ public class GangnamRenderer implements Renderer {
 
             rightDoor.draw(gl);
 
-            boolean isOpen = leftDoorX <= -0.55 && rightDoorX >= 0.55;
-            boolean isClosed = leftDoorX >= 0 && rightDoorX <= 0;
+            boolean isOpen = leftDoorX <= -0.7 && rightDoorX >= 0.7;
+            boolean isClosed = isClosing && leftDoorX >= 0 && rightDoorX <= 0;
             if(isClosed) {
                 leftDoorX = 0;
                 rightDoorX = 0;
                 elevatorDoorsAnimating = Boolean.FALSE;
+                showElevatorInterior = false;
                 isClosing = Boolean.FALSE;
             }
 
             if(isOpen) {
-                boolean shouldClose = System.currentTimeMillis() - elevatorOpenStartTime >= ANIMATION_DURATION;
+                boolean shouldClose = System.currentTimeMillis() - elevatorOpenStartTime >= ELEVATOR_OPEN_ANIMATION_DURATION;
                 if (shouldClose) {
                     isClosing = Boolean.TRUE;
                 }
@@ -155,13 +164,7 @@ public class GangnamRenderer implements Renderer {
             }
 
         } else {
-            // We want the doors to be "closer" if we're in landscape mode.
-            if( isLandscape ){
-                gl.glTranslatef(0.0f, 0.0f, -4.0f);
-            } else {
-                gl.glTranslatef(0.0f, 0.0f, -3.1f);
-            }
-
+            gl.glTranslatef(0.0f, 0.0f, -5.0f);
             leftDoor.draw(gl);
             rightDoor.draw(gl);
             mMediaPlayer = null;
@@ -174,6 +177,8 @@ public class GangnamRenderer implements Renderer {
 			height = 1; 						//Making Height Equal One
 		}
 
+        final boolean isLandscape = isLandscape();
+
 		gl.glViewport(0, 0, width, height); 	//Reset The Current Viewport
 		gl.glMatrixMode(GL10.GL_PROJECTION); 	//Select The Projection Matrix
 		gl.glLoadIdentity(); 					//Reset The Projection Matrix
@@ -183,14 +188,16 @@ public class GangnamRenderer implements Renderer {
 
 		gl.glMatrixMode(GL10.GL_MODELVIEW); 	//Select The Modelview Matrix
 		gl.glLoadIdentity(); 					//Reset The Modelview Matrix
-	}
+
+        elevatorInterior.initializeTextures(gl, this.context);
+        leftDoor.setLandscape(isLandscape);
+        leftDoor.initializeTextures(gl, this.context);
+        rightDoor.setLandscape(isLandscape);
+        rightDoor.initializeTextures(gl, this.context);
+    }
 
 	@Override
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-
-		elevatorInterior.initializeTextures(gl, this.context);
-        leftDoor.initializeTextures(gl, this.context);
-        rightDoor.initializeTextures(gl, this.context);
 		
 		gl.glEnable(GL10.GL_TEXTURE_2D);			//Enable Texture Mapping ( NEW )
 		gl.glShadeModel(GL10.GL_SMOOTH); 			//Enable Smooth Shading

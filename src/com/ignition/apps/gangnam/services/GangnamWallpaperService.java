@@ -1,12 +1,16 @@
 package com.ignition.apps.gangnam.services;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.opengl.GLSurfaceView;
 import android.service.wallpaper.WallpaperService;
+import android.util.Log;
 import android.view.*;
 import com.ignition.apps.gangnam.GangnamRenderer;
 
 public class GangnamWallpaperService extends WallpaperService {
+
+    private static final String TAG = GangnamWallpaperService.class.getName();
 
     @Override
     public Engine onCreateEngine() {
@@ -34,7 +38,7 @@ public class GangnamWallpaperService extends WallpaperService {
             mGestureDetector = new GestureDetector(getApplicationContext(), new GestureDetector.SimpleOnGestureListener() {
                 public boolean onDoubleTapEvent(MotionEvent e) {
                     if ( !((GangnamRenderer) mRenderer).isElevatorDoorsAnimating() ) {
-                        ((GangnamRenderer) mRenderer).openElevator();
+                        ((GangnamRenderer) mRenderer).showElevatorInterior();
                     }
 
                     return super.onDoubleTapEvent(e);
@@ -79,13 +83,7 @@ public class GangnamWallpaperService extends WallpaperService {
 
             WallpaperGLSurfaceView(Context context) {
                 super(context);
-
-                Display display = ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-                int rotation = display.getRotation();
-
-                boolean isLandscape = rotation == Surface.ROTATION_180 || rotation == Surface.ROTATION_270;
-
-                mRenderer = new GangnamRenderer(context, isLandscape);
+                mRenderer = new GangnamRenderer(context);
                 setRenderer(mRenderer);
                 rendererHasBeenSet = true;
             }

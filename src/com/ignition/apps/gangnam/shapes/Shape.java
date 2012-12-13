@@ -28,27 +28,6 @@ public abstract class Shape {
     /** The texture pointer */
     private int[] textures;
 
-    protected Shape() {
-        // a float has 4 bytes so we allocate for each coordinate 4 bytes
-        ByteBuffer byteBuffer = ByteBuffer.allocateDirect(getVertices().length * 4);
-        byteBuffer.order(ByteOrder.nativeOrder());
-
-        // allocates the memory from the byte buffer
-        vertexBuffer = byteBuffer.asFloatBuffer();
-
-        // fill the vertexBuffer with the vertices
-        vertexBuffer.put(getVertices());
-
-        // set the cursor position to the beginning of the buffer
-        vertexBuffer.position(0);
-
-        byteBuffer = ByteBuffer.allocateDirect(texture.length * 4);
-        byteBuffer.order(ByteOrder.nativeOrder());
-        textureBuffer = byteBuffer.asFloatBuffer();
-        textureBuffer.put(texture);
-        textureBuffer.position(0);
-    }
-
     public void draw(GL10 gl) {
         draw(gl, 0);
     }
@@ -109,6 +88,24 @@ public abstract class Shape {
     }
 
     public void initializeTextures(GL10 gl, Context context) {
+        // a float has 4 bytes so we allocate for each coordinate 4 bytes
+        ByteBuffer byteBuffer = ByteBuffer.allocateDirect(getVertices().length * 4);
+        byteBuffer.order(ByteOrder.nativeOrder());
+
+        // allocates the memory from the byte buffer
+        vertexBuffer = byteBuffer.asFloatBuffer();
+
+        // fill the vertexBuffer with the vertices
+        vertexBuffer.put(getVertices());
+
+        // set the cursor position to the beginning of the buffer
+        vertexBuffer.position(0);
+
+        byteBuffer = ByteBuffer.allocateDirect(texture.length * 4);
+        byteBuffer.order(ByteOrder.nativeOrder());
+        textureBuffer = byteBuffer.asFloatBuffer();
+        textureBuffer.put(texture);
+        textureBuffer.position(0);
         loadGLTextures(gl, context, getTextures());
     }
 }
