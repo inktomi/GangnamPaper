@@ -2,8 +2,7 @@ package com.ignition.apps.gangnam;
 
 import android.content.Context;
 import android.opengl.GLSurfaceView;
-import android.view.GestureDetector;
-import android.view.MotionEvent;
+import android.view.*;
 
 public class GangnamSurfaceView extends GLSurfaceView {
 
@@ -13,7 +12,11 @@ public class GangnamSurfaceView extends GLSurfaceView {
     public GangnamSurfaceView(Context context) {
         super(context);
 
-        mGlRenderer = new GangnamRenderer(context);
+        Display display = ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+        int rotation = display.getRotation();
+
+        boolean isLandscape = rotation == Surface.ROTATION_180 || rotation == Surface.ROTATION_270;
+        mGlRenderer = new GangnamRenderer(context, isLandscape);
 
         mGestureDetector = new GestureDetector(new GestureDetector.SimpleOnGestureListener() {
             public void onLongPress(MotionEvent e) {
@@ -22,7 +25,6 @@ public class GangnamSurfaceView extends GLSurfaceView {
         });
 
         setRenderer(mGlRenderer);
-
     }
 
     @Override

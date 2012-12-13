@@ -21,6 +21,7 @@ public class GangnamRenderer implements Renderer {
 
     private Context 	context;
 
+    private boolean isLandscape = Boolean.FALSE;
     private boolean isClosing = Boolean.FALSE;
     private boolean isAnimating = Boolean.FALSE;
     private long animationStartTime;
@@ -99,7 +100,7 @@ public class GangnamRenderer implements Renderer {
     };
 
 	/** Constructor to set the handed over context */
-	public GangnamRenderer(Context context) {
+	public GangnamRenderer(Context context, boolean isLandscape) {
 		this.context = context;
 		
 		// initialise the elevator interior
@@ -107,7 +108,11 @@ public class GangnamRenderer implements Renderer {
 
         // initialise the left door
         this.leftDoor = new LeftDoor();
+        this.leftDoor.setLandscape(isLandscape);
+
+        // initialise the right door
         this.rightDoor = new RightDoor();
+        this.rightDoor.setLandscape(isLandscape);
 	}
 
     public void setAnimating(boolean animating) {
@@ -115,7 +120,7 @@ public class GangnamRenderer implements Renderer {
         animationStartTime = System.currentTimeMillis();
     }
 
-	@Override
+    @Override
 	public void onDrawFrame(GL10 gl) {
 		// clear Screen and Depth Buffer
 		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
@@ -138,7 +143,12 @@ public class GangnamRenderer implements Renderer {
 
             elevatorInterior.draw(gl, lastElevatorInteriorFrame);
 
-            gl.glTranslatef(0.0f, 0.0f, 2.0f);
+            // We want the doors to be "closer" if we're in landscape mode.
+            if( isLandscape ){
+                gl.glTranslatef(0.0f, 0.0f, 1.0f);
+            } else {
+                gl.glTranslatef(0.0f, 0.0f, 1.9f);
+            }
 
             gl.glTranslatef(leftDoorX, 0.0f, 0.0f);
 
@@ -174,7 +184,13 @@ public class GangnamRenderer implements Renderer {
             }
 
         } else {
-            gl.glTranslatef(0.0f, 0.0f, -3.0f);
+            // We want the doors to be "closer" if we're in landscape mode.
+            if( isLandscape ){
+                gl.glTranslatef(0.0f, 0.0f, -4.0f);
+            } else {
+                gl.glTranslatef(0.0f, 0.0f, -3.1f);
+            }
+
             leftDoor.draw(gl);
             rightDoor.draw(gl);
         }

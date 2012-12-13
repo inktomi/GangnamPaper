@@ -25,6 +25,16 @@ public abstract class Door {
     /** The texture pointer */
     protected int[] textures = new int[1];
 
+    private boolean isLandscape = Boolean.FALSE;
+
+    public boolean isLandscape() {
+        return isLandscape;
+    }
+
+    public void setLandscape(boolean landscape) {
+        isLandscape = landscape;
+    }
+
     /** The draw method for the square with the GL context */
     public void draw(GL10 gl) {
         // bind the previously generated texture
