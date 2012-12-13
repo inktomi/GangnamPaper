@@ -8,6 +8,7 @@ import android.opengl.GLSurfaceView;
 import android.service.wallpaper.WallpaperService;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.SurfaceHolder;
 import com.ignition.apps.gangnam.GangnamRenderer;
 
@@ -58,6 +59,7 @@ public class GangnamWallpaperService extends WallpaperService {
     public class GLEngine extends Engine {
         private final String TAG = GLEngine.class.getName();
 
+        private ScaleGestureDetector mScaleGestureDetector;
         private GestureDetector mGestureDetector;
         private WallpaperGLSurfaceView glSurfaceView;
 
@@ -77,6 +79,20 @@ public class GangnamWallpaperService extends WallpaperService {
         public void onCreate(SurfaceHolder surfaceHolder) {
             super.onCreate(surfaceHolder);
 
+            mScaleGestureDetector = new ScaleGestureDetector(getApplicationContext(), new ScaleGestureDetector.SimpleOnScaleGestureListener(){
+                @Override
+                public boolean onScale(ScaleGestureDetector detector) {
+                    if( detector.getScaleFactor() >= 1.0 ){
+                        if (!mRenderer.isElevatorDoorsAnimating()) {
+                            mRenderer.showDanceInterior();
+                            return true;
+                        }
+                    }
+
+                    return false;
+                }
+            });
+
             mGestureDetector = new GestureDetector(getApplicationContext(), new GestureDetector.SimpleOnGestureListener() {
 
                 @Override
@@ -87,14 +103,6 @@ public class GangnamWallpaperService extends WallpaperService {
 
                     return super.onDoubleTapEvent(e);
                 }
-
-                @Override
-                public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-                    if (!mRenderer.isElevatorDoorsAnimating()) {
-                        mRenderer.showDanceInterior();
-                    }
-                    return super.onFling(e1, e2, velocityX, velocityY);
-                }
             });
         }
 
@@ -102,6 +110,7 @@ public class GangnamWallpaperService extends WallpaperService {
         public void onTouchEvent(MotionEvent event) {
             super.onTouchEvent(event);
 
+            mScaleGestureDetector.onTouchEvent(event);
             mGestureDetector.onTouchEvent(event);
         }
 
