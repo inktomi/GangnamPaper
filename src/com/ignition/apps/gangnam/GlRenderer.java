@@ -16,7 +16,7 @@ import javax.microedition.khronos.opengles.GL10;
  */
 public class GlRenderer implements Renderer {
 
-	private Frame frame;		// the frame
+	private ElevatorInterior frame;		// the frame
     private LeftDoor leftDoor;  // The Left Door
     private RightDoor rightDoor; // The right door
 
@@ -25,6 +25,20 @@ public class GlRenderer implements Renderer {
     private boolean isAnimating = Boolean.FALSE;
 
     private int[] frames = new int[] {
+            R.drawable.e39,
+            R.drawable.e40,
+            R.drawable.e41,
+            R.drawable.e42,
+            R.drawable.e43,
+            R.drawable.e44,
+            R.drawable.e45,
+            R.drawable.e46,
+            R.drawable.e47,
+            R.drawable.e48,
+            R.drawable.e49,
+            R.drawable.e50,
+            R.drawable.e51,
+            R.drawable.e52,
             R.drawable.e53,
             R.drawable.e54,
             R.drawable.e55,
@@ -74,6 +88,8 @@ public class GlRenderer implements Renderer {
             R.drawable.e99,
     };
 
+    private int lastFrame;
+
     public void setAnimating(boolean animating) {
         isAnimating = animating;
     }
@@ -89,7 +105,7 @@ public class GlRenderer implements Renderer {
 		this.context = context;
 		
 		// initialise the frame
-		this.frame = new Frame();
+		this.frame = new ElevatorInterior();
 
         // initialise the left door
         this.leftDoor = new LeftDoor();
@@ -104,17 +120,20 @@ public class GlRenderer implements Renderer {
 		// Reset the Modelview Matrix
 		gl.glLoadIdentity();
 
-		// Drawing
-		gl.glTranslatef(0.0f, 0.0f, -5.0f);		// move 5 units INTO the screen
-												// is the same as moving the camera 5 units away
-//		gl.glScalef(0.5f, 0.5f, 0.5f);			// scale the frame to 50%
-												// otherwise it will be too large
-		frame.draw(gl);						// Draw the triangle
-
-        gl.glTranslatef(0.0f, 0.0f, 2.0f);		// move 5 units INTO the screen
-
-
         if( isAnimating ){
+            // Drawing
+            gl.glTranslatef(0.0f, 0.0f, -5.0f);
+
+            if (lastFrame < frames.length - 1) {
+                lastFrame++;
+            } else {
+                lastFrame = 0;
+            }
+
+            frame.draw(gl, lastFrame);
+
+            gl.glTranslatef(0.0f, 0.0f, 2.0f);
+
             gl.glTranslatef(ldx, 0.0f, 0.0f);
 
             leftDoor.draw(gl);
@@ -131,6 +150,7 @@ public class GlRenderer implements Renderer {
                 isAnimating = Boolean.FALSE;
             }
         } else {
+            gl.glTranslatef(0.0f, 0.0f, -3.0f);
             leftDoor.draw(gl);
             rightDoor.draw(gl);
         }
@@ -156,7 +176,7 @@ public class GlRenderer implements Renderer {
 	@Override
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 		// Load the texture for the frame
-		frame.loadGLTexture(gl, this.context, frames[0]);
+		frame.loadGLTextures(gl, this.context, frames);
         leftDoor.loadGLTexture(gl, this.context, leftDoorTexture);
         rightDoor.loadGLTexture(gl, this.context, rightDoorTexture);
 		

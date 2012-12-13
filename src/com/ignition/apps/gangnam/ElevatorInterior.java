@@ -17,7 +17,7 @@ import java.nio.FloatBuffer;
  * @author impaler
  *
  */
-public class Frame {
+public class ElevatorInterior {
 	
 	private FloatBuffer vertexBuffer;	// buffer holding the vertices
 	private float vertices[] = {
@@ -37,9 +37,9 @@ public class Frame {
 	};
 
 	/** The texture pointer */
-	private int[] textures = new int[1];
+	private int[] textures;
 
-	public Frame() {
+	public ElevatorInterior() {
 		// a float has 4 bytes so we allocate for each coordinate 4 bytes
 		ByteBuffer byteBuffer = ByteBuffer.allocateDirect(vertices.length * 4);
 		byteBuffer.order(ByteOrder.nativeOrder());
@@ -65,36 +65,43 @@ public class Frame {
 	 * @param gl
 	 * @param context
 	 */
-	public void loadGLTexture(GL10 gl, Context context, int drawableResId) {
-		// loading texture
-		Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(),
-				drawableResId);
+	public void loadGLTextures(GL10 gl, Context context, int[] drawableResIds) {
 
-		// generate one texture pointer
-		gl.glGenTextures(1, textures, 0);
-		// ...and bind it to our array
-		gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[0]);
-		
-		// create nearest filtered texture
-		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_NEAREST);
-		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_LINEAR);
+        // initialize textures pointer
+        textures = new int[drawableResIds.length];
 
-		//Different possible texture parameters, e.g. GL10.GL_CLAMP_TO_EDGE
+        // generate one texture pointer
+        gl.glGenTextures(drawableResIds.length, textures, 0);
+
+        // load bitmaps
+        for (int i = 0; i < drawableResIds.length; i++) {
+
+            Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), drawableResIds[i]);
+
+            // ...and bind it to our array
+            gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[i]);
+
+            // create nearest filtered texture
+            gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_NEAREST);
+            gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_LINEAR);
+
+            //Different possible texture parameters, e.g. GL10.GL_CLAMP_TO_EDGE
 //		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_WRAP_S, GL10.GL_REPEAT);
 //		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_WRAP_T, GL10.GL_REPEAT);
-		
-		// Use Android GLUtils to specify a two-dimensional texture image from our bitmap 
-		GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, bitmap, 0);
-		
-		// Clean up
-		bitmap.recycle();
+
+            // Use Android GLUtils to specify a two-dimensional texture image from our bitmap
+            GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, bitmap, 0);
+
+            // Clean up
+            bitmap.recycle();
+        }
 	}
 
 	
 	/** The draw method for the square with the GL context */
-	public void draw(GL10 gl) {
+	public void draw(GL10 gl, int textureIdx) {
 		// bind the previously generated texture
-		gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[0]);
+		gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[textureIdx]);
 		
 		// Point to our buffers
 		gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
