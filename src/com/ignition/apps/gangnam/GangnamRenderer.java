@@ -138,7 +138,7 @@ public class GangnamRenderer implements Renderer {
 
             rightDoor.draw(gl);
 
-            boolean isOpen = leftDoorX <= -0.7 && rightDoorX >= 0.7;
+            boolean isOpen = leftDoorX <= -1.0 && rightDoorX >= 1.0;
             boolean isClosed = isClosing && leftDoorX >= 0 && rightDoorX <= 0;
             if(isClosed) {
                 leftDoorX = 0;
