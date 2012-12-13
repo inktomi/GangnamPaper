@@ -22,8 +22,8 @@ public class GangnamRenderer implements Renderer {
     private static final String TAG = GangnamRenderer.class.getName();
     private static final long ELEVATOR_INTERIOR_ANIMATION_DURATION = 4000;
     private static final long DANCE_INTERIOR_ANIMATION_DURATION = 10000;
-    private static final float ELEVATOR_INTERIOR_DOOR_BOUNDARY = 1.0f;
-    private static final float DANCE_INTERIOR_DOOR_BOUNDARY = 2.0f;
+    private static final float ELEVATOR_INTERIOR_DOOR_BOUNDARY = .9f;
+    private static final float DANCE_INTERIOR_DOOR_BOUNDARY = 1.9f;
 
     private Context context;
     private MediaPlayer mMediaPlayer;
