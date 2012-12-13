@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.ignition.apps.gangnam;
+package com.ignition.apps.gangnam.shapes;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;

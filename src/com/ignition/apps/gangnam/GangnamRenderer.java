@@ -7,6 +7,9 @@ import android.content.Context;
 import android.media.MediaPlayer;
 import android.opengl.GLSurfaceView.Renderer;
 import android.opengl.GLU;
+import com.ignition.apps.gangnam.shapes.ElevatorInterior;
+import com.ignition.apps.gangnam.shapes.LeftDoor;
+import com.ignition.apps.gangnam.shapes.RightDoor;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -241,8 +244,8 @@ public class GangnamRenderer implements Renderer {
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 
 		elevatorInterior.loadGLTextures(gl, this.context, elevatorInteriorFrames);
-        leftDoor.loadGLTexture(gl, this.context, leftDoorTexture);
-        rightDoor.loadGLTexture(gl, this.context, rightDoorTexture);
+        leftDoor.loadGLTextures(gl, this.context, leftDoorTexture);
+        rightDoor.loadGLTextures(gl, this.context, rightDoorTexture);
 		
 		gl.glEnable(GL10.GL_TEXTURE_2D);			//Enable Texture Mapping ( NEW )
 		gl.glShadeModel(GL10.GL_SMOOTH); 			//Enable Smooth Shading
