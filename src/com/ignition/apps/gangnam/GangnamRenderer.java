@@ -28,7 +28,7 @@ public class GangnamRenderer implements Renderer {
     private Context context;
     private MediaPlayer mMediaPlayer;
 
-    private boolean isClosing = Boolean.FALSE;
+    private boolean isDoorsClosing = Boolean.FALSE;
     private boolean elevatorDoorsAnimating = Boolean.FALSE;
     private long elevatorOpenStartTime;
 
@@ -52,6 +52,11 @@ public class GangnamRenderer implements Renderer {
     private boolean showDanceInterior;
     private int lastDanceInteriorFrame;
     private long timeOfLastDanceInteriorFrame;
+
+    // dance
+    private Dance dance;
+    private int lastDanceFrame;
+    private long timeOfLastDanceFrame;
 
     private boolean hasNewTextMessage;
 
@@ -80,6 +85,9 @@ public class GangnamRenderer implements Renderer {
 
         // initialize the sms badge
         this.smsBadge = new Badge();
+
+        // initialize the dance
+        this.dance = new Dance();
 	}
 
     public boolean isLandscape() {
@@ -127,12 +135,12 @@ public class GangnamRenderer implements Renderer {
 		// Reset the Modelview Matrix
 		gl.glLoadIdentity();
 
+        // move the camera out 5
+        gl.glTranslatef(0.0f, 0.0f, -5.0f);
+
         if(elevatorDoorsAnimating){
             float doorBoundary = 0.0f;
             long animationDuration = 0;
-
-            // Drawing
-            gl.glTranslatef(0.0f, 0.0f, -5.0f);
 
             // show elevator interior
             if (showElevatorInterior) {
@@ -148,96 +156,141 @@ public class GangnamRenderer implements Renderer {
 
                 doorBoundary = ELEVATOR_INTERIOR_DOOR_BOUNDARY;
                 animationDuration = ELEVATOR_INTERIOR_ANIMATION_DURATION;
-                final boolean showNewFrame = System.currentTimeMillis() - timeOfLastElevatorInteriorFrame >= (1000/58);
+                final boolean showNewElevatorInteriorFrame = System.currentTimeMillis() - timeOfLastElevatorInteriorFrame >= (1000/58);
                 if (lastElevatorInteriorFrame < elevatorInterior.getTextures().length - 1) {
-                    if (showNewFrame) {
+                    if (showNewElevatorInteriorFrame) {
                         lastElevatorInteriorFrame++;
                     }
                 } else {
-                    if (showNewFrame) {
+                    if (showNewElevatorInteriorFrame) {
 
                         // reset the frame to first one
                         lastElevatorInteriorFrame = 0;
                     }
                 }
-                if (showNewFrame) {
+                if (showNewElevatorInteriorFrame) {
                     timeOfLastElevatorInteriorFrame = System.currentTimeMillis();
                 }
-                elevatorInterior.draw(gl, lastElevatorInteriorFrame);
+
+                drawElevatorInteriorFrame(gl, lastElevatorInteriorFrame);
+
             }  else if (showDanceInterior) {
                 doorBoundary = DANCE_INTERIOR_DOOR_BOUNDARY;
                 animationDuration = DANCE_INTERIOR_ANIMATION_DURATION;
-                final boolean showNewFrame = System.currentTimeMillis() - timeOfLastDanceInteriorFrame >= 300;
+                final boolean showNewDanceInteriorFrame = System.currentTimeMillis() - timeOfLastDanceInteriorFrame >= 300;
                 if (lastDanceInteriorFrame < danceInterior.getTextures().length - 1) {
-                    if (showNewFrame) {
+                    if (showNewDanceInteriorFrame) {
                         lastDanceInteriorFrame++;
                     }
                 } else {
-                    if (showNewFrame) {
+                    if (showNewDanceInteriorFrame) {
 
                         // reset the frame to first one
                         lastDanceInteriorFrame = 0;
                     }
                 }
-                if (showNewFrame) {
+                if (showNewDanceInteriorFrame) {
                     timeOfLastDanceInteriorFrame = System.currentTimeMillis();
                 }
-                danceInterior.draw(gl, lastDanceInteriorFrame);
 
-                if( hasNewTextMessage ){
-                    gl.glTranslatef(-0.50f, -1.0f, 0.0f);
-                    smsBadge.draw(gl);
+                drawDanceInteriorFrame(gl, lastDanceInteriorFrame);
 
-                    // Reset.
-                    gl.glTranslatef(0.50f, 1.0f, 0.0f);
+                final boolean showNewDanceFrame = System.currentTimeMillis() - timeOfLastDanceFrame >= (1000/24);
+                if (lastDanceFrame < dance.getTextures().length - 1) {
+                    if (showNewDanceFrame) {
+                        lastDanceFrame++;
+                    }
+                } else {
+                    if (showNewDanceFrame) {
+
+                        // reset the frame to first one
+                        lastDanceFrame = 0;
+                    }
+                }
+                if (showNewDanceFrame) {
+                    timeOfLastDanceFrame = System.currentTimeMillis();
+                }
+
+                drawDanceFrame(gl, lastDanceFrame);
+
+                if (hasNewTextMessage) {
+                    drawSmsBadge(gl);
                 }
             }
 
-            gl.glTranslatef(leftDoorX, 0.0f, 0.0f);
+            drawDoors(gl);
 
-            leftDoor.draw(gl);
+            // the doors are open if they are at their boundaries
+            boolean isDoorsOpen = leftDoorX <= -doorBoundary && rightDoorX >= doorBoundary;
 
-            gl.glTranslatef(-leftDoorX, 0.0f, 0.0f);
-            gl.glTranslatef(rightDoorX, 0.0f, 0.0f);
+            // the doors are closed if they aren't currently closing and they aren't at 0
+            boolean isDoorsClosed = isDoorsClosing && leftDoorX >= 0 && rightDoorX <= 0;
 
-            rightDoor.draw(gl);
-
-            boolean isOpen = leftDoorX <= -doorBoundary && rightDoorX >= doorBoundary;
-            boolean isClosed = isClosing && leftDoorX >= 0 && rightDoorX <= 0;
-            if(isClosed) {
+            // if doors are closed, reset all state
+            if (isDoorsClosed) {
                 leftDoorX = 0;
                 rightDoorX = 0;
                 elevatorDoorsAnimating = Boolean.FALSE;
                 showElevatorInterior = false;
                 showDanceInterior = false;
                 hasNewTextMessage = false;
-                isClosing = Boolean.FALSE;
+                mMediaPlayer = null;
+                isDoorsClosing = Boolean.FALSE;
             }
 
-            if(isOpen) {
-                boolean shouldClose = System.currentTimeMillis() - elevatorOpenStartTime >= animationDuration;
-                if (shouldClose) {
-                    isClosing = Boolean.TRUE;
+            if (isDoorsOpen) {
+                boolean shouldCloseDoors = System.currentTimeMillis() - elevatorOpenStartTime >= animationDuration;
+                if (shouldCloseDoors) {
+                    isDoorsClosing = Boolean.TRUE;
                 }
             }
 
-            if(isClosing && !isClosed) {
+            // if doors are closing and aren't fully closed, move them slightly inward to animate them closed
+            if (isDoorsClosing && !isDoorsClosed) {
                 leftDoorX = leftDoorX + 0.02f;
                 rightDoorX = rightDoorX - 0.02f;
-            } else if (!isOpen) {
+
+            // if the doors aren't closing and they aren't fully open, move them slightly outward to animate them open
+            } else if (!isDoorsOpen) {
                 leftDoorX = leftDoorX - 0.02f;
                 rightDoorX = rightDoorX + 0.02f;
             }
 
         } else {
-            gl.glTranslatef(0.0f, 0.0f, -5.0f);
-            leftDoor.draw(gl);
-            rightDoor.draw(gl);
-            mMediaPlayer = null;
+            leftDoorX = 0;
+            rightDoorX = 0;
+            drawDoors(gl);
         }
 	}
 
-	@Override
+    private void drawElevatorInteriorFrame(GL10 gl, int lastElevatorInteriorFrame) {
+        elevatorInterior.draw(gl, lastElevatorInteriorFrame);
+    }
+
+    private void drawDanceInteriorFrame(GL10 gl, int lastDanceInteriorFrame) {
+        danceInterior.draw(gl, lastDanceInteriorFrame);
+    }
+
+    private void drawDanceFrame(GL10 gl, int lastDanceFrame) {
+        dance.draw(gl, lastDanceFrame);
+    }
+
+    private void drawDoors(GL10 gl) {
+        gl.glTranslatef(leftDoorX, 0.0f, 0.0f);
+        leftDoor.draw(gl);
+        gl.glTranslatef(-leftDoorX, 0.0f, 0.0f);
+        gl.glTranslatef(rightDoorX, 0.0f, 0.0f);
+        rightDoor.draw(gl);
+        gl.glTranslatef(-rightDoorX, 0.0f, 0.0f);
+    }
+
+    private void drawSmsBadge(GL10 gl) {
+        gl.glTranslatef(-0.50f, -1.0f, 0.0f);
+        smsBadge.draw(gl);
+        gl.glTranslatef(0.50f, 1.0f, 0.0f);
+    }
+
+    @Override
 	public void onSurfaceChanged(GL10 gl, int width, int height) {
 		if (height == 0) { 						//Prevent A Divide By Zero By
 			height = 1; 						//Making Height Equal One
@@ -257,11 +310,11 @@ public class GangnamRenderer implements Renderer {
 
         elevatorInterior.initializeTextures(gl, this.context);
         danceInterior.initializeTextures(gl, this.context);
+        dance.initializeTextures(gl, this.context);
         leftDoor.setLandscape(isLandscape);
         leftDoor.initializeTextures(gl, this.context);
         rightDoor.setLandscape(isLandscape);
         rightDoor.initializeTextures(gl, this.context);
-
         smsBadge.initializeTextures(gl, this.context);
     }
 
