@@ -3,21 +3,45 @@ package com.ignition.apps.gangnam.services;
 import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.service.wallpaper.WallpaperService;
-import android.view.SurfaceHolder;
+import android.view.*;
+import com.ignition.apps.gangnam.GangnamRenderer;
 
 public abstract class GLWallpaperService extends WallpaperService {
-
 
     public class GLEngine extends Engine {
         private static final String TAG = "GLEngine";
 
+        private GestureDetector mGestureDetector;
         private WallpaperGLSurfaceView glSurfaceView;
+
+        private GLSurfaceView.Renderer mRenderer;
+
         private boolean rendererHasBeenSet;
+
+        public GLEngine() {
+            this.glSurfaceView = new WallpaperGLSurfaceView(getApplicationContext());
+        }
 
         @Override
         public void onCreate(SurfaceHolder surfaceHolder) {
             super.onCreate(surfaceHolder);
-            glSurfaceView = new WallpaperGLSurfaceView(GLWallpaperService.this);
+
+            mGestureDetector = new GestureDetector(getApplicationContext(), new GestureDetector.SimpleOnGestureListener() {
+                public boolean onDoubleTapEvent(MotionEvent e) {
+                    if ( !((GangnamRenderer) mRenderer).isAnimating() ) {
+                        ((GangnamRenderer) mRenderer).setAnimating(Boolean.TRUE);
+                    }
+
+                    return super.onDoubleTapEvent(e);
+                }
+            });
+        }
+
+        @Override
+        public void onTouchEvent(MotionEvent event) {
+            super.onTouchEvent(event);
+
+            mGestureDetector.onTouchEvent(event);
         }
 
         @Override
@@ -35,11 +59,6 @@ public abstract class GLWallpaperService extends WallpaperService {
             }
         }
 
-        protected void setRenderer(GLSurfaceView.Renderer renderer) {
-            glSurfaceView.setRenderer(renderer);
-            rendererHasBeenSet = true;
-        }
-
         protected void setEGLContextClientVersion(int version) {
             glSurfaceView.setEGLContextClientVersion(version);
         }
@@ -55,6 +74,15 @@ public abstract class GLWallpaperService extends WallpaperService {
 
             WallpaperGLSurfaceView(Context context) {
                 super(context);
+
+                Display display = ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+                int rotation = display.getRotation();
+
+                boolean isLandscape = rotation == Surface.ROTATION_180 || rotation == Surface.ROTATION_270;
+
+                mRenderer = new GangnamRenderer(context, isLandscape);
+                setRenderer(mRenderer);
+                rendererHasBeenSet = true;
             }
 
             @Override

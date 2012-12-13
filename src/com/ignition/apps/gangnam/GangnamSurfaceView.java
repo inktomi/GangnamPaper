@@ -6,7 +6,6 @@ import android.view.*;
 
 public class GangnamSurfaceView extends GLSurfaceView {
 
-    private GestureDetector mGestureDetector;
     private GangnamRenderer mGlRenderer;
 
     public GangnamSurfaceView(Context context) {
@@ -18,23 +17,11 @@ public class GangnamSurfaceView extends GLSurfaceView {
         boolean isLandscape = rotation == Surface.ROTATION_180 || rotation == Surface.ROTATION_270;
         mGlRenderer = new GangnamRenderer(context, isLandscape);
 
-        mGestureDetector = new GestureDetector(new GestureDetector.SimpleOnGestureListener() {
-            public void onLongPress(MotionEvent e) {
-                if (!mGlRenderer.isAnimating()) {
-                    mGlRenderer.setAnimating(Boolean.TRUE);
-                }
-            }
-        });
-
         setRenderer(mGlRenderer);
     }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent e) {
-        if (mGestureDetector.onTouchEvent(e)) {
-            return true;
-        }
-        return super.onTouchEvent(e);
+    public GangnamRenderer getRenderer() {
+        return mGlRenderer;
     }
 
     private class GangnamGestureDetector extends GestureDetector.SimpleOnGestureListener {
