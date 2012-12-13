@@ -12,8 +12,8 @@ public class DanceInterior extends Shape {
     };
 
     private static final int[] TEXTURES = {
-            R.drawable.barn1,
-            R.drawable.barn2
+            R.drawable.dancebg01,
+            R.drawable.dancebg02
     };
 
     @Override
