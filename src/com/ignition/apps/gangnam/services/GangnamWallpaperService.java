@@ -2,20 +2,20 @@ package com.ignition.apps.gangnam.services;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.res.Configuration;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.opengl.GLSurfaceView;
 import android.service.wallpaper.WallpaperService;
-import android.util.Log;
-import android.util.Log;
-import android.view.*;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
+import android.view.SurfaceHolder;
 import com.ignition.apps.gangnam.GangnamRenderer;
 
 public class GangnamWallpaperService extends WallpaperService {
 
     private static final String TAG = GangnamWallpaperService.class.getName();
 
+    private GLEngine mEngine;
     private BroadcastReceiver mBroadcastReceiever;
 
     @Override
@@ -32,7 +32,9 @@ public class GangnamWallpaperService extends WallpaperService {
 
     @Override
     public Engine onCreateEngine() {
-        return new GLEngine();
+        mEngine = new GLEngine();
+
+        return mEngine;
     }
 
     @Override
@@ -48,7 +50,7 @@ public class GangnamWallpaperService extends WallpaperService {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(SMS_ACTION)) {
-                Log.e("SMS!", "it worked");
+                ((GangnamRenderer) mEngine.getRenderer()).newTextMessage();
             }
         }
     }
@@ -65,6 +67,10 @@ public class GangnamWallpaperService extends WallpaperService {
 
         public GLEngine() {
             this.glSurfaceView = new WallpaperGLSurfaceView(getApplicationContext());
+        }
+
+        public GLSurfaceView.Renderer getRenderer() {
+            return mRenderer;
         }
 
         @Override

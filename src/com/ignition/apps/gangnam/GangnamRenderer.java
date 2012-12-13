@@ -8,11 +8,7 @@ import android.content.res.Configuration;
 import android.media.MediaPlayer;
 import android.opengl.GLSurfaceView.Renderer;
 import android.opengl.GLU;
-import android.util.Log;
-import com.ignition.apps.gangnam.shapes.BarnInterior;
-import com.ignition.apps.gangnam.shapes.ElevatorInterior;
-import com.ignition.apps.gangnam.shapes.LeftDoor;
-import com.ignition.apps.gangnam.shapes.RightDoor;
+import com.ignition.apps.gangnam.shapes.*;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -37,6 +33,7 @@ public class GangnamRenderer implements Renderer {
     // doors
     private LeftDoor leftDoor;
     private RightDoor rightDoor;
+    private Badge smsBadge;
     private float leftDoorX = 0;
     private float rightDoorX = 0;
 
@@ -46,6 +43,7 @@ public class GangnamRenderer implements Renderer {
     private int lastElevatorInteriorFrame;
     private long timeOfLastElevatorInteriorFrame;
     private int currentElevatorInteriorAudioClip;
+    private boolean shouldDrawSmsBadge;
 
     // barn interior
     private BarnInterior barnInterior;
@@ -60,7 +58,7 @@ public class GangnamRenderer implements Renderer {
 	/** Constructor to set the handed over context */
 	public GangnamRenderer(Context context) {
 		this.context = context;
-		
+
 		// initialise the elevator interior
 		this.elevatorInterior = new ElevatorInterior();
 
@@ -72,6 +70,9 @@ public class GangnamRenderer implements Renderer {
 
         // initialize the barn interior
         this.barnInterior = new BarnInterior();
+
+        // initialize the sms badge
+        this.smsBadge = new Badge();
 	}
 
     public boolean isLandscape() {
@@ -89,7 +90,9 @@ public class GangnamRenderer implements Renderer {
     }
 
     public void newTextMessage() {
+        shouldDrawSmsBadge = Boolean.TRUE;
 
+        showElevatorInterior();
     }
 
     @Override
@@ -126,6 +129,9 @@ public class GangnamRenderer implements Renderer {
                 }
 
                 elevatorInterior.draw(gl, lastElevatorInteriorFrame);
+
+                // Draw the badges on top of the elevator inside
+                smsBadge.draw(gl);
             }
 
             gl.glTranslatef(0.0f, 0.0f, 0.0f);
@@ -194,6 +200,8 @@ public class GangnamRenderer implements Renderer {
         leftDoor.initializeTextures(gl, this.context);
         rightDoor.setLandscape(isLandscape);
         rightDoor.initializeTextures(gl, this.context);
+
+        smsBadge.initializeTextures(gl, this.context);
     }
 
 	@Override
