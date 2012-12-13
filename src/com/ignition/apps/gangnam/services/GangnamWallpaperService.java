@@ -15,7 +15,7 @@ public class GangnamWallpaperService extends WallpaperService {
 
     private static final String TAG = GangnamWallpaperService.class.getName();
 
-    private GLEngine mEngine;
+    private static GLEngine ENGINE;
     private BroadcastReceiver mBroadcastReceiever;
 
     @Override
@@ -32,9 +32,9 @@ public class GangnamWallpaperService extends WallpaperService {
 
     @Override
     public Engine onCreateEngine() {
-        mEngine = new GLEngine();
+        ENGINE = new GLEngine();
 
-        return mEngine;
+        return ENGINE;
     }
 
     @Override
@@ -44,19 +44,19 @@ public class GangnamWallpaperService extends WallpaperService {
         this.unregisterReceiver(mBroadcastReceiever);
     }
 
-    class ActionReceiver extends BroadcastReceiver {
+    private static class ActionReceiver extends BroadcastReceiver {
         private static final String SMS_ACTION = "android.provider.Telephony.SMS_RECEIVED";
 
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(SMS_ACTION)) {
-                ((GangnamRenderer) mEngine.getRenderer()).newTextMessage();
+                ((GangnamRenderer) ENGINE.getRenderer()).newTextMessage();
             }
         }
     }
 
     public class GLEngine extends Engine {
-        private static final String TAG = "GLEngine";
+        private final String TAG = GLEngine.class.getName();
 
         private GestureDetector mGestureDetector;
         private WallpaperGLSurfaceView glSurfaceView;
