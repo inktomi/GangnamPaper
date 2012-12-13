@@ -4,6 +4,7 @@
 package com.ignition.apps.gangnam;
 
 import android.content.Context;
+import android.media.MediaPlayer;
 import android.opengl.GLSurfaceView.Renderer;
 import android.opengl.GLU;
 
@@ -17,9 +18,10 @@ import javax.microedition.khronos.opengles.GL10;
 public class GangnamRenderer implements Renderer {
 
     private static final String TAG = GangnamRenderer.class.getName();
-    private static final long ANIMATION_DURATION = 5000;
+    private static final long ANIMATION_DURATION = 4000;
 
-    private Context 	context;
+    private Context context;
+    private MediaPlayer mMediaPlayer;
 
     private boolean isLandscape = Boolean.FALSE;
     private boolean isClosing = Boolean.FALSE;
@@ -38,7 +40,7 @@ public class GangnamRenderer implements Renderer {
     private ElevatorInterior elevatorInterior;
     private int lastElevatorInteriorFrame;
     private long timeOfLastElevatorInteriorFrame;
-    private int[] elevatorInteriorFrames = new int[] {
+    private int[] elevatorInteriorFrames = {
             R.drawable.e42,
             R.drawable.e43,
             R.drawable.e44,
@@ -99,6 +101,14 @@ public class GangnamRenderer implements Renderer {
             R.drawable.e99,
     };
 
+    private int currentElevatorInteriorAudioClip;
+    private int[] elevatorInteriorAudioClips = {
+            R.raw.arun1,
+            R.raw.arun2,
+            R.raw.arun3,
+            R.raw.arun4
+    };
+
 	/** Constructor to set the handed over context */
 	public GangnamRenderer(Context context, boolean isLandscape) {
 		this.context = context;
@@ -112,12 +122,15 @@ public class GangnamRenderer implements Renderer {
 
         // initialise the right door
         this.rightDoor = new RightDoor();
-        this.rightDoor.setLandscape(isLandscape);
 	}
 
     public void setAnimating(boolean animating) {
         isAnimating = animating;
         animationStartTime = System.currentTimeMillis();
+    }
+
+    public boolean isAnimating() {
+        return isAnimating;
     }
 
     @Override
@@ -129,6 +142,16 @@ public class GangnamRenderer implements Renderer {
 		gl.glLoadIdentity();
 
         if( isAnimating ){
+            if (mMediaPlayer == null) {
+                mMediaPlayer = MediaPlayer.create(context, elevatorInteriorAudioClips[currentElevatorInteriorAudioClip]);
+                mMediaPlayer.start();
+                if (currentElevatorInteriorAudioClip < elevatorInteriorAudioClips.length - 1) {
+                    currentElevatorInteriorAudioClip++;
+                } else {
+                    currentElevatorInteriorAudioClip = 0;
+                }
+            }
+
             // Drawing
             gl.glTranslatef(0.0f, 0.0f, -5.0f);
 
@@ -193,6 +216,7 @@ public class GangnamRenderer implements Renderer {
 
             leftDoor.draw(gl);
             rightDoor.draw(gl);
+            mMediaPlayer = null;
         }
 	}
 

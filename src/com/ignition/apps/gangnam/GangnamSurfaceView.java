@@ -20,7 +20,9 @@ public class GangnamSurfaceView extends GLSurfaceView {
 
         mGestureDetector = new GestureDetector(new GestureDetector.SimpleOnGestureListener() {
             public void onLongPress(MotionEvent e) {
-                mGlRenderer.setAnimating(Boolean.TRUE);
+                if (!mGlRenderer.isAnimating()) {
+                    mGlRenderer.setAnimating(Boolean.TRUE);
+                }
             }
         });
 
