@@ -61,7 +61,7 @@ public class GangnamWallpaperService extends WallpaperService {
         private GestureDetector mGestureDetector;
         private WallpaperGLSurfaceView glSurfaceView;
 
-        private GLSurfaceView.Renderer mRenderer;
+        private GangnamRenderer mRenderer;
 
         private boolean rendererHasBeenSet;
 
@@ -78,12 +78,22 @@ public class GangnamWallpaperService extends WallpaperService {
             super.onCreate(surfaceHolder);
 
             mGestureDetector = new GestureDetector(getApplicationContext(), new GestureDetector.SimpleOnGestureListener() {
+
+                @Override
                 public boolean onDoubleTapEvent(MotionEvent e) {
-                    if ( !((GangnamRenderer) mRenderer).isElevatorDoorsAnimating() ) {
-                        ((GangnamRenderer) mRenderer).showElevatorInterior();
+                    if (!mRenderer.isElevatorDoorsAnimating()) {
+                        mRenderer.showElevatorInterior();
                     }
 
                     return super.onDoubleTapEvent(e);
+                }
+
+                @Override
+                public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+                    if (!mRenderer.isElevatorDoorsAnimating()) {
+                        mRenderer.newTextMessage();
+                    }
+                    return super.onFling(e1, e2, velocityX, velocityY);
                 }
             });
         }
