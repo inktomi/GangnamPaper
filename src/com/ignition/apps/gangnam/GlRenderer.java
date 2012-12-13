@@ -16,13 +16,18 @@ import javax.microedition.khronos.opengles.GL10;
  */
 public class GlRenderer implements Renderer {
 
+    private static final String TAG = GlRenderer.class.getName();
+
 	private ElevatorInterior frame;		// the frame
     private LeftDoor leftDoor;  // The Left Door
     private RightDoor rightDoor; // The right door
 
 	private Context 	context;
 
+    private boolean isClosing = Boolean.FALSE;
     private boolean isAnimating = Boolean.FALSE;
+    private long animationDuration = 5000;
+    private long animationStartTime;
 
     private int[] frames = new int[] {
             R.drawable.e39,
@@ -92,6 +97,7 @@ public class GlRenderer implements Renderer {
 
     public void setAnimating(boolean animating) {
         isAnimating = animating;
+        animationStartTime = System.currentTimeMillis();
     }
 
     private int leftDoorTexture = R.drawable.door_left;
@@ -138,17 +144,35 @@ public class GlRenderer implements Renderer {
 
             leftDoor.draw(gl);
 
-            gl.glTranslatef(0.0f, 0.0f, 0.0f);
+            gl.glTranslatef(-ldx, 0.0f, 0.0f);
             gl.glTranslatef(rdx, 0.0f, 0.0f);
 
             rightDoor.draw(gl);
 
-            ldx = ldx - 0.1f;
-            rdx = rdx + 0.1f;
-
-            if( ldx > 2 && rdx > 2 ){
+            boolean isOpen = ldx <= -0.55 && rdx >= 0.55;
+            boolean isClosed = ldx >= 0 && rdx <= 0;
+            if(isClosed) {
+                ldx = 0;
+                rdx = 0;
                 isAnimating = Boolean.FALSE;
+                isClosing = Boolean.FALSE;
             }
+
+            if(isOpen) {
+                boolean shouldClose = System.currentTimeMillis() - animationStartTime >= animationDuration;
+                if (shouldClose) {
+                    isClosing = Boolean.TRUE;
+                }
+            }
+
+            if(isClosing && !isClosed) {
+                ldx = ldx + 0.01f;
+                rdx = rdx - 0.01f;
+            } else if (!isOpen) {
+                ldx = ldx - 0.01f;
+                rdx = rdx + 0.01f;
+            }
+
         } else {
             gl.glTranslatef(0.0f, 0.0f, -3.0f);
             leftDoor.draw(gl);
