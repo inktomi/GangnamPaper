@@ -8,8 +8,7 @@ import android.content.res.Configuration;
 import android.media.MediaPlayer;
 import android.opengl.GLSurfaceView.Renderer;
 import android.opengl.GLU;
-import android.util.Log;
-import com.ignition.apps.gangnam.shapes.BarnInterior;
+import com.ignition.apps.gangnam.shapes.DanceInterior;
 import com.ignition.apps.gangnam.shapes.ElevatorInterior;
 import com.ignition.apps.gangnam.shapes.LeftDoor;
 import com.ignition.apps.gangnam.shapes.RightDoor;
@@ -24,8 +23,10 @@ import javax.microedition.khronos.opengles.GL10;
 public class GangnamRenderer implements Renderer {
 
     private static final String TAG = GangnamRenderer.class.getName();
-    private static final long ELEVATOR_OPEN_ANIMATION_DURATION = 4000;
-    private static final long NEW_MESSAGE_ANIMATION_DURATION = 10000;
+    private static final long ELEVATOR_INTERIOR_ANIMATION_DURATION = 4000;
+    private static final long DANCE_INTERIOR_ANIMATION_DURATION = 10000;
+    private static final float ELEVATOR_INTERIOR_DOOR_BOUNDARY = 1.0f;
+    private static final float DANCE_INTERIOR_DOOR_BOUNDARY = 2.0f;
 
     private Context context;
     private MediaPlayer mMediaPlayer;
@@ -47,8 +48,13 @@ public class GangnamRenderer implements Renderer {
     private long timeOfLastElevatorInteriorFrame;
     private int currentElevatorInteriorAudioClip;
 
-    // barn interior
-    private BarnInterior barnInterior;
+    // dance interior
+    private DanceInterior danceInterior;
+    private boolean showDanceInterior;
+    private int lastDanceInteriorFrame;
+    private long timeOfLastDanceInteriorFrame;
+
+    private boolean hasNewTextMessage;
 
     private int[] elevatorInteriorAudioClips = {
             R.raw.arun1,
@@ -71,7 +77,7 @@ public class GangnamRenderer implements Renderer {
         this.rightDoor = new RightDoor();
 
         // initialize the barn interior
-        this.barnInterior = new BarnInterior();
+        this.danceInterior = new DanceInterior();
 	}
 
     public boolean isLandscape() {
@@ -79,9 +85,22 @@ public class GangnamRenderer implements Renderer {
     }
 
     public void showElevatorInterior() {
-        elevatorDoorsAnimating = true;
+
+        // only animate if not already animating
+        if (!isElevatorDoorsAnimating()) {
+            animateElevatorDoorsOpen();
+        }
         showElevatorInterior = true;
-        elevatorOpenStartTime = System.currentTimeMillis();
+    }
+
+    public void showDanceInterior() {
+
+        // only animate if not already animating
+        if (!isElevatorDoorsAnimating()) {
+            animateElevatorDoorsOpen();
+        }
+        showDanceInterior = true;
+        showElevatorInterior = false;
     }
 
     public boolean isElevatorDoorsAnimating() {
@@ -89,7 +108,13 @@ public class GangnamRenderer implements Renderer {
     }
 
     public void newTextMessage() {
+        showDanceInterior();
+        hasNewTextMessage = true;
+    }
 
+    private void animateElevatorDoorsOpen() {
+        elevatorDoorsAnimating = true;
+        elevatorOpenStartTime = System.currentTimeMillis();
     }
 
     @Override
@@ -101,34 +126,63 @@ public class GangnamRenderer implements Renderer {
 		gl.glLoadIdentity();
 
         if(elevatorDoorsAnimating){
-            if (mMediaPlayer == null && showElevatorInterior) {
-                mMediaPlayer = MediaPlayer.create(context, elevatorInteriorAudioClips[currentElevatorInteriorAudioClip]);
-                mMediaPlayer.start();
-                if (currentElevatorInteriorAudioClip < elevatorInteriorAudioClips.length - 1) {
-                    currentElevatorInteriorAudioClip++;
-                } else {
-                    currentElevatorInteriorAudioClip = 0;
-                }
-            }
+            float doorBoundary = 0.0f;
+            long animationDuration = 0;
 
             // Drawing
             gl.glTranslatef(0.0f, 0.0f, -5.0f);
 
             // show elevator interior
             if (showElevatorInterior) {
-                if (lastElevatorInteriorFrame < elevatorInterior.getTextures().length - 1) {
-                    if (System.currentTimeMillis() - timeOfLastElevatorInteriorFrame >= (1000/58)) {
-                        lastElevatorInteriorFrame++;
-                        timeOfLastElevatorInteriorFrame = System.currentTimeMillis();
+                if (mMediaPlayer == null) {
+                    mMediaPlayer = MediaPlayer.create(context, elevatorInteriorAudioClips[currentElevatorInteriorAudioClip]);
+                    mMediaPlayer.start();
+                    if (currentElevatorInteriorAudioClip < elevatorInteriorAudioClips.length - 1) {
+                        currentElevatorInteriorAudioClip++;
+                    } else {
+                        currentElevatorInteriorAudioClip = 0;
                     }
-                } else {
-                    lastElevatorInteriorFrame = 0;
                 }
 
+                doorBoundary = ELEVATOR_INTERIOR_DOOR_BOUNDARY;
+                animationDuration = ELEVATOR_INTERIOR_ANIMATION_DURATION;
+                final boolean showNewFrame = System.currentTimeMillis() - timeOfLastElevatorInteriorFrame >= (1000/58);
+                if (lastElevatorInteriorFrame < elevatorInterior.getTextures().length - 1) {
+                    if (showNewFrame) {
+                        lastElevatorInteriorFrame++;
+                    }
+                } else {
+                    if (showNewFrame) {
+
+                        // reset the frame to first one
+                        lastElevatorInteriorFrame = 0;
+                    }
+                }
+                if (showNewFrame) {
+                    timeOfLastElevatorInteriorFrame = System.currentTimeMillis();
+                }
                 elevatorInterior.draw(gl, lastElevatorInteriorFrame);
+            }  else if (showDanceInterior) {
+                doorBoundary = DANCE_INTERIOR_DOOR_BOUNDARY;
+                animationDuration = DANCE_INTERIOR_ANIMATION_DURATION;
+                final boolean showNewFrame = System.currentTimeMillis() - timeOfLastDanceInteriorFrame >= 300;
+                if (lastDanceInteriorFrame < danceInterior.getTextures().length - 1) {
+                    if (showNewFrame) {
+                        lastDanceInteriorFrame++;
+                    }
+                } else {
+                    if (showNewFrame) {
+
+                        // reset the frame to first one
+                        lastDanceInteriorFrame = 0;
+                    }
+                }
+                if (showNewFrame) {
+                    timeOfLastDanceInteriorFrame = System.currentTimeMillis();
+                }
+                danceInterior.draw(gl, lastDanceInteriorFrame);
             }
 
-            gl.glTranslatef(0.0f, 0.0f, 0.0f);
             gl.glTranslatef(leftDoorX, 0.0f, 0.0f);
 
             leftDoor.draw(gl);
@@ -138,29 +192,31 @@ public class GangnamRenderer implements Renderer {
 
             rightDoor.draw(gl);
 
-            boolean isOpen = leftDoorX <= -1.0 && rightDoorX >= 1.0;
+            boolean isOpen = leftDoorX <= -doorBoundary && rightDoorX >= doorBoundary;
             boolean isClosed = isClosing && leftDoorX >= 0 && rightDoorX <= 0;
             if(isClosed) {
                 leftDoorX = 0;
                 rightDoorX = 0;
                 elevatorDoorsAnimating = Boolean.FALSE;
                 showElevatorInterior = false;
+                showDanceInterior = false;
+                hasNewTextMessage = false;
                 isClosing = Boolean.FALSE;
             }
 
             if(isOpen) {
-                boolean shouldClose = System.currentTimeMillis() - elevatorOpenStartTime >= ELEVATOR_OPEN_ANIMATION_DURATION;
+                boolean shouldClose = System.currentTimeMillis() - elevatorOpenStartTime >= animationDuration;
                 if (shouldClose) {
                     isClosing = Boolean.TRUE;
                 }
             }
 
             if(isClosing && !isClosed) {
-                leftDoorX = leftDoorX + 0.01f;
-                rightDoorX = rightDoorX - 0.01f;
+                leftDoorX = leftDoorX + 0.02f;
+                rightDoorX = rightDoorX - 0.02f;
             } else if (!isOpen) {
-                leftDoorX = leftDoorX - 0.01f;
-                rightDoorX = rightDoorX + 0.01f;
+                leftDoorX = leftDoorX - 0.02f;
+                rightDoorX = rightDoorX + 0.02f;
             }
 
         } else {
@@ -190,6 +246,7 @@ public class GangnamRenderer implements Renderer {
 		gl.glLoadIdentity(); 					//Reset The Modelview Matrix
 
         elevatorInterior.initializeTextures(gl, this.context);
+        danceInterior.initializeTextures(gl, this.context);
         leftDoor.setLandscape(isLandscape);
         leftDoor.initializeTextures(gl, this.context);
         rightDoor.setLandscape(isLandscape);

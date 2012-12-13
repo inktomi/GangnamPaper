@@ -2,7 +2,7 @@ package com.ignition.apps.gangnam.shapes;
 
 import com.ignition.apps.gangnam.R;
 
-public class BarnInterior extends Shape {
+public class DanceInterior extends Shape {
 
     private static final float[] VERTICES = {
             -2.0f, -2.0f,  0.0f,		// V1 - bottom left
