@@ -24,11 +24,4 @@ public class GangnamSurfaceView extends GLSurfaceView {
         return mGlRenderer;
     }
 
-    private class GangnamGestureDetector extends GestureDetector.SimpleOnGestureListener {
-        @Override
-        public boolean onDoubleTap(MotionEvent e) {
-            mGlRenderer.setAnimating(Boolean.TRUE);
-            return Boolean.TRUE;
-        }
-    }
 }

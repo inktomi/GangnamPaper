@@ -7,6 +7,7 @@ import android.content.Context;
 import android.media.MediaPlayer;
 import android.opengl.GLSurfaceView.Renderer;
 import android.opengl.GLU;
+import com.ignition.apps.gangnam.shapes.BarnInterior;
 import com.ignition.apps.gangnam.shapes.ElevatorInterior;
 import com.ignition.apps.gangnam.shapes.LeftDoor;
 import com.ignition.apps.gangnam.shapes.RightDoor;
@@ -28,8 +29,8 @@ public class GangnamRenderer implements Renderer {
 
     private boolean isLandscape = Boolean.FALSE;
     private boolean isClosing = Boolean.FALSE;
-    private boolean isAnimating = Boolean.FALSE;
-    private long animationStartTime;
+    private boolean elevatorDoorsAnimating = Boolean.FALSE;
+    private long elevatorOpenStartTime;
 
     // doors
     private LeftDoor leftDoor;
@@ -42,6 +43,9 @@ public class GangnamRenderer implements Renderer {
     private int lastElevatorInteriorFrame;
     private long timeOfLastElevatorInteriorFrame;
     private int currentElevatorInteriorAudioClip;
+
+    // barn interior
+    private BarnInterior barnInterior;
 
     private int[] elevatorInteriorAudioClips = {
             R.raw.arun1,
@@ -63,15 +67,18 @@ public class GangnamRenderer implements Renderer {
 
         // initialise the right door
         this.rightDoor = new RightDoor();
+
+        // initialize the barn interior
+        this.barnInterior = new BarnInterior();
 	}
 
-    public void setAnimating(boolean animating) {
-        isAnimating = animating;
-        animationStartTime = System.currentTimeMillis();
+    public void openElevator() {
+        elevatorDoorsAnimating = true;
+        elevatorOpenStartTime = System.currentTimeMillis();
     }
 
-    public boolean isAnimating() {
-        return isAnimating;
+    public boolean isElevatorDoorsAnimating() {
+        return elevatorDoorsAnimating;
     }
 
     @Override
@@ -82,7 +89,7 @@ public class GangnamRenderer implements Renderer {
 		// Reset the Modelview Matrix
 		gl.glLoadIdentity();
 
-        if( isAnimating ){
+        if(elevatorDoorsAnimating){
             if (mMediaPlayer == null) {
                 mMediaPlayer = MediaPlayer.create(context, elevatorInteriorAudioClips[currentElevatorInteriorAudioClip]);
                 mMediaPlayer.start();
@@ -128,12 +135,12 @@ public class GangnamRenderer implements Renderer {
             if(isClosed) {
                 leftDoorX = 0;
                 rightDoorX = 0;
-                isAnimating = Boolean.FALSE;
+                elevatorDoorsAnimating = Boolean.FALSE;
                 isClosing = Boolean.FALSE;
             }
 
             if(isOpen) {
-                boolean shouldClose = System.currentTimeMillis() - animationStartTime >= ANIMATION_DURATION;
+                boolean shouldClose = System.currentTimeMillis() - elevatorOpenStartTime >= ANIMATION_DURATION;
                 if (shouldClose) {
                     isClosing = Boolean.TRUE;
                 }
