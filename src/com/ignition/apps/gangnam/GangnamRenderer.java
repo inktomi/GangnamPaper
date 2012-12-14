@@ -21,7 +21,7 @@ public class GangnamRenderer implements Renderer {
 
     private static final String TAG = GangnamRenderer.class.getName();
     private static final long ELEVATOR_INTERIOR_ANIMATION_DURATION = 4000;
-    private static final long DANCE_INTERIOR_ANIMATION_DURATION = 10000;
+    private static final long DANCE_INTERIOR_ANIMATION_DURATION = 13000;
     private static final float ELEVATOR_INTERIOR_DOOR_BOUNDARY = .9f;
     private static final float DANCE_INTERIOR_DOOR_BOUNDARY = 1.9f;
 
@@ -61,11 +61,13 @@ public class GangnamRenderer implements Renderer {
     private boolean hasNewTextMessage;
 
     private int[] elevatorInteriorAudioClips = {
-            R.raw.arun1,
-            R.raw.arun2,
-            R.raw.arun3,
-            R.raw.arun4
+            R.raw.elevator_interior1,
+            R.raw.elevator_interior2,
+            R.raw.elevator_interior3,
+            R.raw.elevator_interior4
     };
+
+    private int danceAudioClip = R.raw.dance;
 
 	/** Constructor to set the handed over context */
 	public GangnamRenderer(Context context) {
@@ -175,6 +177,10 @@ public class GangnamRenderer implements Renderer {
                 drawElevatorInteriorFrame(gl, lastElevatorInteriorFrame);
 
             }  else if (showDanceInterior) {
+                if (mMediaPlayer == null && !hasNewTextMessage) {
+                    mMediaPlayer = MediaPlayer.create(context, R.raw.dance);
+                    mMediaPlayer.start();
+                }
                 doorBoundary = DANCE_INTERIOR_DOOR_BOUNDARY;
                 animationDuration = DANCE_INTERIOR_ANIMATION_DURATION;
                 final boolean showNewDanceInteriorFrame = System.currentTimeMillis() - timeOfLastDanceInteriorFrame >= 300;
@@ -272,9 +278,9 @@ public class GangnamRenderer implements Renderer {
     }
 
     private void drawDanceFrame(GL10 gl, int lastDanceFrame) {
-        gl.glTranslatef(0.0f, -0.75f, 0.0f);
+        gl.glTranslatef(0.0f, -0.5f, 0.0f);
         dance.draw(gl, lastDanceFrame);
-        gl.glTranslatef(0.0f, 0.75f, 0.0f);
+        gl.glTranslatef(0.0f, 0.5f, 0.0f);
     }
 
     private void drawDoors(GL10 gl) {
