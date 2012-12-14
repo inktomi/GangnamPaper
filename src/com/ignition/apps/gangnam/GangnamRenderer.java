@@ -294,11 +294,10 @@ public class GangnamRenderer implements Renderer {
 
     @Override
 	public void onSurfaceChanged(GL10 gl, int width, int height) {
+
 		if (height == 0) { 						//Prevent A Divide By Zero By
 			height = 1; 						//Making Height Equal One
 		}
-
-        final boolean isLandscape = isLandscape();
 
 		gl.glViewport(0, 0, width, height); 	//Reset The Current Viewport
 		gl.glMatrixMode(GL10.GL_PROJECTION); 	//Select The Projection Matrix
@@ -309,20 +308,11 @@ public class GangnamRenderer implements Renderer {
 
 		gl.glMatrixMode(GL10.GL_MODELVIEW); 	//Select The Modelview Matrix
 		gl.glLoadIdentity(); 					//Reset The Modelview Matrix
-
-        elevatorInterior.initializeTextures(gl, this.context);
-        danceInterior.initializeTextures(gl, this.context);
-        dance.initializeTextures(gl, this.context);
-        leftDoor.setLandscape(isLandscape);
-        leftDoor.initializeTextures(gl, this.context);
-        rightDoor.setLandscape(isLandscape);
-        rightDoor.initializeTextures(gl, this.context);
-        smsBadge.initializeTextures(gl, this.context);
     }
 
 	@Override
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-		
+
 		gl.glEnable(GL10.GL_TEXTURE_2D);			//Enable Texture Mapping ( NEW )
 		gl.glShadeModel(GL10.GL_SMOOTH); 			//Enable Smooth Shading
 		gl.glClearColor(0.0f, 0.0f, 0.0f, 0.5f); 	//Black Background
@@ -333,6 +323,18 @@ public class GangnamRenderer implements Renderer {
 		//Really Nice Perspective Calculations
 		gl.glHint(GL10.GL_PERSPECTIVE_CORRECTION_HINT, GL10.GL_NICEST);
 
+        final int doorColorFilter = WallpaperPreferences.getDoorColorFilter(this.context);
+        final boolean isLandscape = isLandscape();
+        elevatorInterior.initializeTextures(gl, this.context);
+        danceInterior.initializeTextures(gl, this.context);
+        dance.initializeTextures(gl, this.context);
+        leftDoor.setLandscape(isLandscape);
+        leftDoor.setColorFilter(doorColorFilter);
+        leftDoor.initializeTextures(gl, this.context);
+        rightDoor.setLandscape(isLandscape);
+        rightDoor.setColorFilter(doorColorFilter);
+        rightDoor.initializeTextures(gl, this.context);
+        smsBadge.initializeTextures(gl, this.context);
 	}
 
 }

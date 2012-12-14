@@ -70,7 +70,7 @@ public abstract class Shape {
         // load bitmaps
         for (int i = 0; i < drawableResIds.length; i++) {
 
-            Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), drawableResIds[i]);
+            Bitmap bitmap = modifyTexture(context, BitmapFactory.decodeResource(context.getResources(), drawableResIds[i]));
 
             // ...and bind it to our array
             gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[i]);
@@ -109,5 +109,9 @@ public abstract class Shape {
         textureBuffer.put(texture);
         textureBuffer.position(0);
         loadGLTextures(gl, context, getTextures());
+    }
+
+    protected Bitmap modifyTexture(Context context, Bitmap texture) {
+        return texture;
     }
 }

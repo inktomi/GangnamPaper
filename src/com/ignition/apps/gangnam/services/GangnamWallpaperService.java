@@ -1,22 +1,22 @@
 package com.ignition.apps.gangnam.services;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
+import android.content.*;
 import android.opengl.GLSurfaceView;
 import android.service.wallpaper.WallpaperService;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.SurfaceHolder;
 import com.ignition.apps.gangnam.GangnamRenderer;
+import com.ignition.apps.gangnam.WallpaperPreferences;
 
-public class GangnamWallpaperService extends WallpaperService {
+public class GangnamWallpaperService extends WallpaperService implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     private static final String TAG = GangnamWallpaperService.class.getName();
 
-    private static GLEngine ENGINE;
+    private static GLEngine sEngine;
     private BroadcastReceiver mBroadcastReceiever;
 
     @Override
@@ -29,13 +29,14 @@ public class GangnamWallpaperService extends WallpaperService {
         mBroadcastReceiever = new ActionReceiver();
 
         this.registerReceiver(mBroadcastReceiever, intentFilter);
+        WallpaperPreferences.getSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
     }
 
     @Override
     public Engine onCreateEngine() {
-        ENGINE = new GLEngine();
+        sEngine = new GLEngine();
 
-        return ENGINE;
+        return sEngine;
     }
 
     @Override
@@ -43,6 +44,17 @@ public class GangnamWallpaperService extends WallpaperService {
         super.onDestroy();
 
         this.unregisterReceiver(mBroadcastReceiever);
+        WallpaperPreferences.getSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (TextUtils.equals(WallpaperPreferences.COLOR_FILTER, key)) {
+            Log.d(TAG, "new color filter: " + WallpaperPreferences.getSharedPreferences(this).getInt(WallpaperPreferences.COLOR_FILTER, 0x00000000));
+
+            // not sure if this is the best way to refresh or not, but it works :D
+            onCreateEngine();
+        }
     }
 
     private static class ActionReceiver extends BroadcastReceiver {
@@ -51,7 +63,7 @@ public class GangnamWallpaperService extends WallpaperService {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(SMS_ACTION)) {
-                ((GangnamRenderer) ENGINE.getRenderer()).newTextMessage();
+                ((GangnamRenderer) sEngine.getRenderer()).newTextMessage();
             }
         }
     }
@@ -73,6 +85,10 @@ public class GangnamWallpaperService extends WallpaperService {
 
         public GLSurfaceView.Renderer getRenderer() {
             return mRenderer;
+        }
+
+        public WallpaperGLSurfaceView getSurfaceView() {
+            return this.glSurfaceView;
         }
 
         @Override

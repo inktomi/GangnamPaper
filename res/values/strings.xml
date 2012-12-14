@@ -5,7 +5,10 @@
     <string name="description">A Gangnam Wallpaper using found video from a popular ecommerce company.</string>
 
     <!-- Wallpaper Preferences -->
-    <string name="color_filter_key">color_filter</string>
+    <string name="color_filter_key">door_color_filter</string>
     <string name="color_filter_title">Elevator Color Overlay</string>
     <string name="color_filter_summary">Select a color to overlay on top of the elevator.</string>
+    <string name="color_filter_reset_key">door_color_filter_reset</string>
+    <string name="color_filter_reset_title">Remove Elevator Color Overlay</string>
+    <string name="color_filter_reset_summary">Remove the elevator color overlay leaving the default elevator images.</string>
 </resources>

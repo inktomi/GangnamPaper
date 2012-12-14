@@ -6,9 +6,15 @@
             android:key="@string/color_filter_key"
             android:title="@string/color_filter_title"
             android:summary="@string/color_filter_summary"
-            android:defaultValue="@android:color/transparent"
             android:persistent="true"
             alphaSlider="true"
     />
+
+    <Preference
+            android:key="@string/color_filter_reset_key"
+            android:title="@string/color_filter_reset_title"
+            android:summary="@string/color_filter_reset_summary"
+            android:persistent="false"
+            />
 
 </PreferenceScreen>
