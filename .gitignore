@@ -19,7 +19,7 @@ local.properties
 .classpath
 .project
 
-.idea
+.idea/
 
 # Design source files
 design/source/
