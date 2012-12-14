@@ -98,7 +98,7 @@ public class GangnamWallpaperService extends WallpaperService implements SharedP
             mScaleGestureDetector = new ScaleGestureDetector(getApplicationContext(), new ScaleGestureDetector.SimpleOnScaleGestureListener(){
                 @Override
                 public boolean onScale(ScaleGestureDetector detector) {
-                    if( detector.getScaleFactor() >= 1.0 ){
+                    if( detector.getScaleFactor() >= 1.5 ){
                         if (!mRenderer.isElevatorDoorsAnimating()) {
                             mRenderer.showDanceInterior();
                             return true;
