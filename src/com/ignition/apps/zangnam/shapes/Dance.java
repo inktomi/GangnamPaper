@@ -48,7 +48,23 @@ public class Dance extends Shape {
             R.drawable.droid34,
             R.drawable.droid35,
             R.drawable.droid36,
-            R.drawable.droid37,
+            R.drawable.droid38,
+            R.drawable.droid39,
+            R.drawable.droid40,
+            R.drawable.droid41,
+            R.drawable.droid42,
+            R.drawable.droid43,
+            R.drawable.droid44,
+            R.drawable.droid45,
+            R.drawable.droid46,
+            R.drawable.droid47,
+            R.drawable.droid48,
+            R.drawable.droid49,
+            R.drawable.droid50,
+            R.drawable.droid51,
+            R.drawable.droid52,
+            R.drawable.droid53,
+            R.drawable.droid54
     };
 
     @Override

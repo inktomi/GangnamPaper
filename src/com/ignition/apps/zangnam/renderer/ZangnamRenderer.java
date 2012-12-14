@@ -4,10 +4,15 @@
 package com.ignition.apps.zangnam.renderer;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.opengl.GLSurfaceView.Renderer;
 import android.opengl.GLU;
+import android.util.Log;
+import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import com.ignition.apps.zangnam.R;
 import com.ignition.apps.zangnam.preferences.WallpaperPreferences;
 import com.ignition.apps.zangnam.shapes.*;
@@ -63,6 +68,7 @@ public class ZangnamRenderer implements Renderer {
     private long timeOfLastDanceFrame;
 
     private boolean hasNewTextMessage;
+    private boolean reloadTextures;
 
     private int[] elevatorInteriorAudioClips = {
             R.raw.elevator_interior1,
@@ -96,7 +102,7 @@ public class ZangnamRenderer implements Renderer {
         this.dance = new Dance();
 	}
 
-    public boolean isLandscape() {
+    private boolean isLandscape() {
         return Configuration.ORIENTATION_LANDSCAPE == context.getResources().getConfiguration().orientation;
     }
 
@@ -105,8 +111,8 @@ public class ZangnamRenderer implements Renderer {
         // only animate if not already animating
         if (!isElevatorDoorsAnimating()) {
             animateElevatorDoorsOpen();
+            showElevatorInterior = true;
         }
-        showElevatorInterior = true;
     }
 
     public void showDanceInterior() {
@@ -114,9 +120,9 @@ public class ZangnamRenderer implements Renderer {
         // only animate if not already animating
         if (!isElevatorDoorsAnimating()) {
             animateElevatorDoorsOpen();
+            showDanceInterior = true;
+            showElevatorInterior = false;
         }
-        showDanceInterior = true;
-        showElevatorInterior = false;
     }
 
     public boolean isElevatorDoorsAnimating() {
@@ -151,6 +157,32 @@ public class ZangnamRenderer implements Renderer {
             elevatorResumeTime = System.currentTimeMillis();
             elevatorPausedMillis += (elevatorResumeTime - elevatorPauseTime);
         }
+    }
+
+    public void onDoubleTap(MotionEvent event) {
+
+        // launch text message app
+        if (isElevatorDoorsAnimating() && hasNewTextMessage) {
+            Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.addCategory(Intent.CATEGORY_DEFAULT);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.setType("vnd.android-dir/mms-sms");
+            context.startActivity(intent);
+        } else {
+            showElevatorInterior();
+        }
+    }
+
+    public boolean onScale(ScaleGestureDetector detector) {
+        if (detector.getScaleFactor() >= 1.5) {
+            showDanceInterior();
+            return true;
+        }
+        return false;
+    }
+
+    public void reloadTextures() {
+        this.reloadTextures = true;
     }
 
     @Override
@@ -272,7 +304,7 @@ public class ZangnamRenderer implements Renderer {
             if (isDoorsClosed) {
                 leftDoorX = 0;
                 rightDoorX = 0;
-                elevatorDoorsAnimating = Boolean.FALSE;
+                elevatorDoorsAnimating = false;
                 showElevatorInterior = false;
                 showDanceInterior = false;
                 hasNewTextMessage = false;
@@ -347,10 +379,15 @@ public class ZangnamRenderer implements Renderer {
 
     @Override
 	public void onSurfaceChanged(GL10 gl, int width, int height) {
-
+        Log.d(TAG, "onSurfaceChanged()");
 		if (height == 0) { 						//Prevent A Divide By Zero By
 			height = 1; 						//Making Height Equal One
 		}
+
+        if (reloadTextures) {
+            Log.d(TAG, "reloading textures...");
+            initializeTextures(gl);
+        }
 
 		gl.glViewport(0, 0, width, height); 	//Reset The Current Viewport
 		gl.glMatrixMode(GL10.GL_PROJECTION); 	//Select The Projection Matrix
@@ -376,6 +413,11 @@ public class ZangnamRenderer implements Renderer {
 		//Really Nice Perspective Calculations
 		gl.glHint(GL10.GL_PERSPECTIVE_CORRECTION_HINT, GL10.GL_NICEST);
 
+        initializeTextures(gl);
+	}
+
+    private void initializeTextures(GL10 gl) {
+        Log.d(TAG, "initializing textures...");
         final int doorColorFilter = WallpaperPreferences.getDoorColorFilter(this.context);
         final boolean isLandscape = isLandscape();
         elevatorInterior.initializeTextures(gl, this.context);
@@ -388,6 +430,7 @@ public class ZangnamRenderer implements Renderer {
         rightDoor.setColorFilter(doorColorFilter);
         rightDoor.initializeTextures(gl, this.context);
         smsBadge.initializeTextures(gl, this.context);
-	}
+        reloadTextures = false;
+    }
 
 }

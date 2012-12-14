@@ -53,7 +53,7 @@ public class ZangnamWallpaperService extends WallpaperService implements SharedP
             Log.d(TAG, "new color filter: " + WallpaperPreferences.getSharedPreferences(this).getInt(WallpaperPreferences.COLOR_FILTER, 0x00000000));
 
             // not sure if this is the best way to refresh or not, but it works :D
-            onCreateEngine();
+            ((ZangnamRenderer) sEngine.getRenderer()).reloadTextures();
         }
     }
 
@@ -98,26 +98,16 @@ public class ZangnamWallpaperService extends WallpaperService implements SharedP
             mScaleGestureDetector = new ScaleGestureDetector(getApplicationContext(), new ScaleGestureDetector.SimpleOnScaleGestureListener(){
                 @Override
                 public boolean onScale(ScaleGestureDetector detector) {
-                    if( detector.getScaleFactor() >= 1.5 ){
-                        if (!mRenderer.isElevatorDoorsAnimating()) {
-                            mRenderer.showDanceInterior();
-                            return true;
-                        }
-                    }
-
-                    return false;
+                    return mRenderer.onScale(detector);
                 }
             });
 
             mGestureDetector = new GestureDetector(getApplicationContext(), new GestureDetector.SimpleOnGestureListener() {
 
                 @Override
-                public boolean onDoubleTapEvent(MotionEvent e) {
-                    if (!mRenderer.isElevatorDoorsAnimating()) {
-                        mRenderer.showElevatorInterior();
-                    }
-
-                    return super.onDoubleTapEvent(e);
+                public boolean onDoubleTap(MotionEvent e) {
+                    mRenderer.onDoubleTap(e);
+                    return super.onDoubleTap(e);
                 }
             });
         }
