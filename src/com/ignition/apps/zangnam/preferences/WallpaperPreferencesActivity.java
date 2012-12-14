@@ -1,4 +1,4 @@
-package com.ignition.apps.gangnam;
+package com.ignition.apps.zangnam.preferences;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.text.TextUtils;
+import com.ignition.apps.zangnam.R;
 import net.margaritov.preference.colorpicker.ColorPickerPreference;
 
 public class WallpaperPreferencesActivity extends PreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener {

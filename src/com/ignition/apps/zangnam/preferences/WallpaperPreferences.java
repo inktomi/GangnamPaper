@@ -1,4 +1,4 @@
-package com.ignition.apps.gangnam;
+package com.ignition.apps.zangnam.preferences;
 
 import android.content.Context;
 import android.content.SharedPreferences;

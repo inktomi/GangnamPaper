@@ -1,4 +1,4 @@
-package com.ignition.apps.gangnam.services;
+package com.ignition.apps.zangnam.services;
 
 import android.content.*;
 import android.opengl.GLSurfaceView;
@@ -9,12 +9,12 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.SurfaceHolder;
-import com.ignition.apps.gangnam.GangnamRenderer;
-import com.ignition.apps.gangnam.WallpaperPreferences;
+import com.ignition.apps.zangnam.renderer.ZangnamRenderer;
+import com.ignition.apps.zangnam.preferences.WallpaperPreferences;
 
-public class GangnamWallpaperService extends WallpaperService implements SharedPreferences.OnSharedPreferenceChangeListener {
+public class ZangnamWallpaperService extends WallpaperService implements SharedPreferences.OnSharedPreferenceChangeListener {
 
-    private static final String TAG = GangnamWallpaperService.class.getName();
+    private static final String TAG = ZangnamWallpaperService.class.getName();
 
     private static GLEngine sEngine;
     private BroadcastReceiver mBroadcastReceiever;
@@ -63,7 +63,7 @@ public class GangnamWallpaperService extends WallpaperService implements SharedP
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(SMS_ACTION)) {
-                ((GangnamRenderer) sEngine.getRenderer()).newTextMessage();
+                ((ZangnamRenderer) sEngine.getRenderer()).newTextMessage();
             }
         }
     }
@@ -75,7 +75,7 @@ public class GangnamWallpaperService extends WallpaperService implements SharedP
         private GestureDetector mGestureDetector;
         private WallpaperGLSurfaceView glSurfaceView;
 
-        private GangnamRenderer mRenderer;
+        private ZangnamRenderer mRenderer;
 
         private boolean rendererHasBeenSet;
 
@@ -168,7 +168,7 @@ public class GangnamWallpaperService extends WallpaperService implements SharedP
 
             WallpaperGLSurfaceView(Context context) {
                 super(context);
-                mRenderer = new GangnamRenderer(context);
+                mRenderer = new ZangnamRenderer(context);
                 setRenderer(mRenderer);
                 rendererHasBeenSet = true;
             }

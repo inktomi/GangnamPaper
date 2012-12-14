@@ -3,7 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/libs/ColorPickerPreference/ColorPickerPreference.iml" filepath="$PROJECT_DIR$/libs/ColorPickerPreference/ColorPickerPreference.iml" />
-      <module fileurl="file://$PROJECT_DIR$//Gangnam Paper.iml" filepath="$PROJECT_DIR$//Gangnam Paper.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Zangnam Live Wallpaper.iml" filepath="$PROJECT_DIR$/Zangnam Live Wallpaper.iml" />
     </modules>
   </component>
 </project>

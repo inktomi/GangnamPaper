@@ -1,14 +1,16 @@
 /**
  * 
  */
-package com.ignition.apps.gangnam;
+package com.ignition.apps.zangnam.renderer;
 
 import android.content.Context;
 import android.content.res.Configuration;
 import android.media.MediaPlayer;
 import android.opengl.GLSurfaceView.Renderer;
 import android.opengl.GLU;
-import com.ignition.apps.gangnam.shapes.*;
+import com.ignition.apps.zangnam.R;
+import com.ignition.apps.zangnam.preferences.WallpaperPreferences;
+import com.ignition.apps.zangnam.shapes.*;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -17,9 +19,9 @@ import javax.microedition.khronos.opengles.GL10;
  * @author impaler
  *
  */
-public class GangnamRenderer implements Renderer {
+public class ZangnamRenderer implements Renderer {
 
-    private static final String TAG = GangnamRenderer.class.getName();
+    private static final String TAG = ZangnamRenderer.class.getName();
     private static final long ELEVATOR_INTERIOR_ANIMATION_DURATION = 4000;
     private static final long DANCE_INTERIOR_ANIMATION_DURATION = 13000;
     private static final float ELEVATOR_INTERIOR_DOOR_BOUNDARY = .9f;
@@ -72,7 +74,7 @@ public class GangnamRenderer implements Renderer {
     private int danceAudioClip = R.raw.dance;
 
 	/** Constructor to set the handed over context */
-	public GangnamRenderer(Context context) {
+	public ZangnamRenderer(Context context) {
 		this.context = context;
 		
 		// initialise the elevator interior

@@ -1,9 +1,9 @@
 /**
  * 
  */
-package com.ignition.apps.gangnam.shapes;
+package com.ignition.apps.zangnam.shapes;
 
-import com.ignition.apps.gangnam.R;
+import com.ignition.apps.zangnam.R;
 
 /**
  * @author impaler
