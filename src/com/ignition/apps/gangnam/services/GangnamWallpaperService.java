@@ -142,6 +142,10 @@ public class GangnamWallpaperService extends WallpaperService implements SharedP
                         glSurfaceView.onPause();
                     }
                 }
+
+                if( isPreview() ){
+                    mRenderer.showDanceInterior();
+                }
             }
         }
 
