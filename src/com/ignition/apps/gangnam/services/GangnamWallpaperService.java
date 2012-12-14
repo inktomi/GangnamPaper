@@ -136,10 +136,14 @@ public class GangnamWallpaperService extends WallpaperService implements SharedP
 
             if (rendererHasBeenSet) {
                 if (visible) {
+                    Log.d(TAG, "onVisibilityChanged(true) - onResume()");
                     glSurfaceView.onResume();
+                    mRenderer.onResume();
                 } else {
                     if (!isPreview()) {
+                        Log.d(TAG, "onVisibilityChanged(false) - onPause()");
                         glSurfaceView.onPause();
+                        mRenderer.onPause();
                     }
                 }
 

@@ -31,6 +31,9 @@ public class GangnamRenderer implements Renderer {
     private boolean isDoorsClosing = Boolean.FALSE;
     private boolean elevatorDoorsAnimating = Boolean.FALSE;
     private long elevatorOpenStartTime;
+    private long elevatorPauseTime;
+    private long elevatorResumeTime;
+    private long elevatorPausedMillis;
 
     // doors
     private LeftDoor leftDoor;
@@ -45,7 +48,6 @@ public class GangnamRenderer implements Renderer {
     private int lastElevatorInteriorFrame;
     private long timeOfLastElevatorInteriorFrame;
     private int currentElevatorInteriorAudioClip;
-    private boolean shouldDrawSmsBadge;
 
     // dance interior
     private DanceInterior danceInterior;
@@ -129,6 +131,26 @@ public class GangnamRenderer implements Renderer {
         elevatorOpenStartTime = System.currentTimeMillis();
     }
 
+    public void onPause() {
+        if (isElevatorDoorsAnimating()) {
+            elevatorPauseTime = System.currentTimeMillis();
+
+            // if music is playing, kill the music!
+            if (mMediaPlayer != null && mMediaPlayer.isPlaying()) {
+                mMediaPlayer.stop();
+                mMediaPlayer.release();
+                mMediaPlayer = null;
+            }
+        }
+    }
+
+    public void onResume() {
+        if (isElevatorDoorsAnimating()) {
+            elevatorResumeTime = System.currentTimeMillis();
+            elevatorPausedMillis += (elevatorResumeTime - elevatorPauseTime);
+        }
+    }
+
     @Override
 	public void onDrawFrame(GL10 gl) {
 		// clear Screen and Depth Buffer
@@ -143,16 +165,23 @@ public class GangnamRenderer implements Renderer {
         if(elevatorDoorsAnimating){
             float doorBoundary = 0.0f;
             long animationDuration = 0;
+            long now = System.currentTimeMillis();
+            long timePlaying = now - (elevatorPausedMillis + elevatorOpenStartTime);
 
             // show elevator interior
             if (showElevatorInterior) {
-                if (mMediaPlayer == null && WallpaperPreferences.playElevatorMusic(context)) {
-                    mMediaPlayer = MediaPlayer.create(context, elevatorInteriorAudioClips[currentElevatorInteriorAudioClip]);
-                    mMediaPlayer.start();
-                    if (currentElevatorInteriorAudioClip < elevatorInteriorAudioClips.length - 1) {
-                        currentElevatorInteriorAudioClip++;
-                    } else {
-                        currentElevatorInteriorAudioClip = 0;
+                if (WallpaperPreferences.playElevatorMusic(context)) {
+                    if (mMediaPlayer == null) {
+                        mMediaPlayer = MediaPlayer.create(context, elevatorInteriorAudioClips[currentElevatorInteriorAudioClip]);
+
+                        // seek to the right part of the song (user may have enabled music after doors were already open
+                        mMediaPlayer.seekTo((int)timePlaying);
+                        mMediaPlayer.start();
+                        if (currentElevatorInteriorAudioClip < elevatorInteriorAudioClips.length - 1) {
+                            currentElevatorInteriorAudioClip++;
+                        } else {
+                            currentElevatorInteriorAudioClip = 0;
+                        }
                     }
                 }
 
@@ -177,9 +206,14 @@ public class GangnamRenderer implements Renderer {
                 drawElevatorInteriorFrame(gl, lastElevatorInteriorFrame);
 
             }  else if (showDanceInterior) {
-                if (mMediaPlayer == null && WallpaperPreferences.playElevatorMusic(context) && !hasNewTextMessage) {
-                    mMediaPlayer = MediaPlayer.create(context, R.raw.dance);
-                    mMediaPlayer.start();
+                if (WallpaperPreferences.playElevatorMusic(context) && !hasNewTextMessage) {
+                    if (mMediaPlayer == null) {
+                        mMediaPlayer = MediaPlayer.create(context, R.raw.dance);
+
+                        // seek to the right part of the song (user may have enabled music after doors were already open
+                        mMediaPlayer.seekTo((int)timePlaying);
+                        mMediaPlayer.start();
+                    }
                 }
                 doorBoundary = DANCE_INTERIOR_DOOR_BOUNDARY;
                 animationDuration = DANCE_INTERIOR_ANIMATION_DURATION;
@@ -240,12 +274,23 @@ public class GangnamRenderer implements Renderer {
                 showElevatorInterior = false;
                 showDanceInterior = false;
                 hasNewTextMessage = false;
-                mMediaPlayer = null;
+                elevatorPauseTime = 0;
+                elevatorResumeTime = 0;
+                elevatorPausedMillis = 0;
+
+                // if media player is running stop it
+                if (mMediaPlayer != null) {
+                    if (mMediaPlayer.isPlaying()) {
+                        mMediaPlayer.stop();
+                        mMediaPlayer.release();
+                    }
+                    mMediaPlayer = null;
+                }
                 isDoorsClosing = Boolean.FALSE;
             }
 
             if (isDoorsOpen) {
-                boolean shouldCloseDoors = System.currentTimeMillis() - elevatorOpenStartTime >= animationDuration;
+                boolean shouldCloseDoors = timePlaying >= animationDuration;
                 if (shouldCloseDoors) {
                     isDoorsClosing = Boolean.TRUE;
                 }
