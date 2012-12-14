@@ -5,12 +5,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.opengl.GLSurfaceView;
+import android.os.AsyncTask;
+import android.os.Handler;
 import android.service.wallpaper.WallpaperService;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.SurfaceHolder;
 import com.ignition.apps.gangnam.GangnamRenderer;
+import zh.wang.android.utils.YahooWeather4a.WeatherInfo;
+import zh.wang.android.utils.YahooWeather4a.YahooWeatherUtils;
 
 public class GangnamWallpaperService extends WallpaperService {
 
@@ -29,6 +33,16 @@ public class GangnamWallpaperService extends WallpaperService {
         mBroadcastReceiever = new ActionReceiver();
 
         this.registerReceiver(mBroadcastReceiever, intentFilter);
+
+        Handler weatherDownloader = new Handler();
+        weatherDownloader.postDelayed(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        new WeatherDownloader().execute("89074");
+                    }
+                }, 5000 // every 5 seconds.
+        );
     }
 
     @Override
@@ -157,6 +171,24 @@ public class GangnamWallpaperService extends WallpaperService {
             public void onDestroy() {
                 super.onDetachedFromWindow();
             }
+        }
+    }
+
+    private class WeatherDownloader extends AsyncTask<String, WeatherInfo, WeatherInfo> {
+        @Override
+        protected WeatherInfo doInBackground(String... zipCodes) {
+            YahooWeatherUtils yahooWeatherUtils = YahooWeatherUtils.getInstance();
+            WeatherInfo weatherInfo = yahooWeatherUtils.queryYahooWeather(getApplicationContext(), zipCodes[0]);
+
+            return weatherInfo;
+        }
+
+        @Override
+        protected void onPostExecute(WeatherInfo weatherInfo) {
+            super.onPostExecute(weatherInfo);
+
+            // Update the weather panel
+            ((GangnamRenderer) ENGINE.getRenderer()).updateWeatherInformation(weatherInfo.getForecast1Text());
         }
     }
 }

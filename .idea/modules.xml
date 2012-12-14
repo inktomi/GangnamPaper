@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/libs/ColorPickerPreference/ColorPickerPreference.iml" filepath="$PROJECT_DIR$/libs/ColorPickerPreference/ColorPickerPreference.iml" />
       <module fileurl="file://$PROJECT_DIR$//Gangnam Paper.iml" filepath="$PROJECT_DIR$//Gangnam Paper.iml" />
+      <module fileurl="file://$PROJECT_DIR$/libs/YWeatherGetter4a/YWeatherGetter4a.iml" filepath="$PROJECT_DIR$/libs/YWeatherGetter4a/YWeatherGetter4a.iml" />
     </modules>
   </component>
 </project>

@@ -36,6 +36,7 @@ public class GangnamRenderer implements Renderer {
     private LeftDoor leftDoor;
     private RightDoor rightDoor;
     private Badge smsBadge;
+    private WeatherPanel weatherPanel;
     private float leftDoorX = 0;
     private float rightDoorX = 0;
 
@@ -260,6 +261,9 @@ public class GangnamRenderer implements Renderer {
             leftDoorX = 0;
             rightDoorX = 0;
             drawDoors(gl);
+
+            // Draw the weather over the doors.
+            drawWeatherPanel(gl);
         }
 	}
 
@@ -284,10 +288,23 @@ public class GangnamRenderer implements Renderer {
         gl.glTranslatef(-rightDoorX, 0.0f, 0.0f);
     }
 
+    private void drawWeatherPanel(GL10 gl){
+        gl.glTranslatef(0.0f, -1.0f, 0.0f);
+        weatherPanel.draw(gl, context);
+        gl.glTranslatef(0.0f, 1.0f, 0.0f);
+    }
+
     private void drawSmsBadge(GL10 gl) {
         gl.glTranslatef(-0.50f, -1.0f, 0.0f);
         smsBadge.draw(gl);
         gl.glTranslatef(0.50f, 1.0f, 0.0f);
+    }
+
+    public void updateWeatherInformation(String weather){
+
+            // initialize the weather panel
+            this.weatherPanel = new WeatherPanel(context, weather );
+        
     }
 
     @Override

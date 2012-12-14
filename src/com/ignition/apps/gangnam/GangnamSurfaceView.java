@@ -17,5 +17,4 @@ public class GangnamSurfaceView extends GLSurfaceView {
     public GangnamRenderer getRenderer() {
         return mGlRenderer;
     }
-
 }
