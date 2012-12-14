@@ -2,6 +2,14 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <CheckBoxPreference
+            android:key="@string/elevator_music_key"
+            android:title="@string/elevator_music_title"
+            android:summary="@string/elevator_music_summary"
+            android:persistent="true"
+            android:defaultValue="true"
+            />
+
     <net.margaritov.preference.colorpicker.ColorPickerPreference
             android:key="@string/color_filter_key"
             android:title="@string/color_filter_title"

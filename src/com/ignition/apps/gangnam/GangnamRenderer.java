@@ -146,7 +146,7 @@ public class GangnamRenderer implements Renderer {
 
             // show elevator interior
             if (showElevatorInterior) {
-                if (mMediaPlayer == null) {
+                if (mMediaPlayer == null && WallpaperPreferences.playElevatorMusic(context)) {
                     mMediaPlayer = MediaPlayer.create(context, elevatorInteriorAudioClips[currentElevatorInteriorAudioClip]);
                     mMediaPlayer.start();
                     if (currentElevatorInteriorAudioClip < elevatorInteriorAudioClips.length - 1) {
@@ -177,7 +177,7 @@ public class GangnamRenderer implements Renderer {
                 drawElevatorInteriorFrame(gl, lastElevatorInteriorFrame);
 
             }  else if (showDanceInterior) {
-                if (mMediaPlayer == null && !hasNewTextMessage) {
+                if (mMediaPlayer == null && WallpaperPreferences.playElevatorMusic(context) && !hasNewTextMessage) {
                     mMediaPlayer = MediaPlayer.create(context, R.raw.dance);
                     mMediaPlayer.start();
                 }

@@ -5,6 +5,9 @@
     <string name="description">A Gangnam Wallpaper using found video from a popular ecommerce company.</string>
 
     <!-- Wallpaper Preferences -->
+    <string name="elevator_music_key">elevator_music</string>
+    <string name="elevator_music_title">Play Elevator Music</string>
+    <string name="elevator_music_summary">Play music when elevator doors open (except when there is a new message).</string>
     <string name="color_filter_key">door_color_filter</string>
     <string name="color_filter_title">Elevator Color Overlay</string>
     <string name="color_filter_summary">Select a color to overlay on top of the elevator.</string>
