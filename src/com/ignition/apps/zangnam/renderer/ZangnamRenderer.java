@@ -7,10 +7,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.media.MediaPlayer;
-import android.net.Uri;
 import android.opengl.GLSurfaceView.Renderer;
 import android.opengl.GLU;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import com.ignition.apps.zangnam.R;
@@ -391,13 +389,11 @@ public class ZangnamRenderer implements Renderer {
 
     @Override
 	public void onSurfaceChanged(GL10 gl, int width, int height) {
-        Log.d(TAG, "onSurfaceChanged()");
 		if (height == 0) { 						//Prevent A Divide By Zero By
 			height = 1; 						//Making Height Equal One
 		}
 
         if (reloadTextures) {
-            Log.d(TAG, "reloading textures...");
             initializeTextures(gl);
         }
 
@@ -429,7 +425,6 @@ public class ZangnamRenderer implements Renderer {
 	}
 
     private void initializeTextures(GL10 gl) {
-        Log.d(TAG, "initializing textures...");
         final int doorColorFilter = WallpaperPreferences.getDoorColorFilter(this.context);
         final boolean isLandscape = isLandscape();
         elevatorInterior.initializeTextures(gl, this.context);

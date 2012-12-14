@@ -4,7 +4,6 @@ import android.content.*;
 import android.opengl.GLSurfaceView;
 import android.service.wallpaper.WallpaperService;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
@@ -50,7 +49,6 @@ public class ZangnamWallpaperService extends WallpaperService implements SharedP
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if (TextUtils.equals(WallpaperPreferences.COLOR_FILTER, key)) {
-            Log.d(TAG, "new color filter: " + WallpaperPreferences.getSharedPreferences(this).getInt(WallpaperPreferences.COLOR_FILTER, 0x00000000));
 
             // not sure if this is the best way to refresh or not, but it works :D
             ((ZangnamRenderer) sEngine.getRenderer()).reloadTextures();
@@ -126,12 +124,10 @@ public class ZangnamWallpaperService extends WallpaperService implements SharedP
 
             if (rendererHasBeenSet) {
                 if (visible) {
-                    Log.d(TAG, "onVisibilityChanged(true) - onResume()");
                     glSurfaceView.onResume();
                     mRenderer.onResume();
                 } else {
                     if (!isPreview()) {
-                        Log.d(TAG, "onVisibilityChanged(false) - onPause()");
                         glSurfaceView.onPause();
                         mRenderer.onPause();
                     }
