@@ -66,6 +66,7 @@ public class ZangnamRenderer implements Renderer {
     private Dance dance;
     private int lastDanceFrame;
     private long timeOfLastDanceFrame;
+    private float danceX;
 
     private boolean hasNewTextMessage;
     private boolean reloadTextures;
@@ -357,9 +358,20 @@ public class ZangnamRenderer implements Renderer {
     }
 
     private void drawDanceFrame(GL10 gl, int lastDanceFrame) {
-        gl.glTranslatef(0.0f, -0.5f, 0.0f);
+        if (lastDanceFrame >= 39 && lastDanceFrame < 53) {
+            danceX += 0.008f;
+        } else if (lastDanceFrame >= 53 && lastDanceFrame < 67) {
+            danceX -= 0.008f;
+        } else if (lastDanceFrame >= 67 && lastDanceFrame < 81) {
+            danceX -= 0.008f;
+        } else if (lastDanceFrame >= 81 && lastDanceFrame < 95) {
+            danceX += 0.008f;
+        } else {
+            danceX = 0.0f;
+        }
+        gl.glTranslatef(danceX, -0.5f, 0.0f);
         dance.draw(gl, lastDanceFrame);
-        gl.glTranslatef(0.0f, 0.5f, 0.0f);
+        gl.glTranslatef(-danceX, 0.5f, 0.0f);
     }
 
     private void drawDoors(GL10 gl) {
