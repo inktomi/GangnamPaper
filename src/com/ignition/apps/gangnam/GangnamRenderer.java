@@ -195,7 +195,7 @@ public class GangnamRenderer implements Renderer {
 
                 drawDanceInteriorFrame(gl, lastDanceInteriorFrame);
 
-                final boolean showNewDanceFrame = System.currentTimeMillis() - timeOfLastDanceFrame >= (1000/24);
+                final boolean showNewDanceFrame = System.currentTimeMillis() - timeOfLastDanceFrame >= (1000/10);
                 if (lastDanceFrame < dance.getTextures().length - 1) {
                     if (showNewDanceFrame) {
                         lastDanceFrame++;
@@ -272,7 +272,9 @@ public class GangnamRenderer implements Renderer {
     }
 
     private void drawDanceFrame(GL10 gl, int lastDanceFrame) {
+        gl.glTranslatef(0.0f, -0.75f, 0.0f);
         dance.draw(gl, lastDanceFrame);
+        gl.glTranslatef(0.0f, 0.75f, 0.0f);
     }
 
     private void drawDoors(GL10 gl) {
