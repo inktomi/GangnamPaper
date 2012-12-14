@@ -219,9 +219,9 @@ public class GangnamRenderer implements Renderer {
 
                 drawDanceFrame(gl, lastDanceFrame);
 
-//                if (hasNewTextMessage) {
+                if (hasNewTextMessage) {
                     drawSmsBadge(gl);
-//                }
+                }
             }
 
             drawDoors(gl);
