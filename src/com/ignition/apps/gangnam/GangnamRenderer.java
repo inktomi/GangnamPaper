@@ -219,9 +219,9 @@ public class GangnamRenderer implements Renderer {
 
                 drawDanceFrame(gl, lastDanceFrame);
 
-                if (hasNewTextMessage) {
+//                if (hasNewTextMessage) {
                     drawSmsBadge(gl);
-                }
+//                }
             }
 
             drawDoors(gl);
@@ -293,9 +293,9 @@ public class GangnamRenderer implements Renderer {
     }
 
     private void drawSmsBadge(GL10 gl) {
-        gl.glTranslatef(-0.50f, -1.0f, 0.0f);
+        gl.glTranslatef(-0.8f, 0.7f, 0.0f);
         smsBadge.draw(gl);
-        gl.glTranslatef(0.50f, 1.0f, 0.0f);
+        gl.glTranslatef(0.8f, -0.7f, 0.0f);
     }
 
     @Override
