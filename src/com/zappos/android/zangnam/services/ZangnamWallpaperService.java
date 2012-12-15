@@ -1,4 +1,4 @@
-package com.ignition.apps.zangnam.services;
+package com.zappos.android.zangnam.services;
 
 import android.content.*;
 import android.opengl.GLSurfaceView;
@@ -8,8 +8,8 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.SurfaceHolder;
-import com.ignition.apps.zangnam.renderer.ZangnamRenderer;
-import com.ignition.apps.zangnam.preferences.WallpaperPreferences;
+import com.zappos.android.zangnam.renderer.ZangnamRenderer;
+import com.zappos.android.zangnam.preferences.WallpaperPreferences;
 
 public class ZangnamWallpaperService extends WallpaperService implements SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -134,6 +134,7 @@ public class ZangnamWallpaperService extends WallpaperService implements SharedP
                 }
 
                 if( isPreview() ){
+                    mRenderer.setIsPreviewMode(true);
                     mRenderer.showDanceInterior();
                 }
             }

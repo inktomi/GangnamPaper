@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.ignition.apps.zangnam.renderer;
+package com.zappos.android.zangnam.renderer;
 
 import android.content.Context;
 import android.content.Intent;
@@ -11,9 +11,9 @@ import android.opengl.GLSurfaceView.Renderer;
 import android.opengl.GLU;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
-import com.ignition.apps.zangnam.R;
-import com.ignition.apps.zangnam.preferences.WallpaperPreferences;
-import com.ignition.apps.zangnam.shapes.*;
+import com.zappos.android.zangnam.R;
+import com.zappos.android.zangnam.preferences.WallpaperPreferences;
+import com.zappos.android.zangnam.shapes.*;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -68,6 +68,7 @@ public class ZangnamRenderer implements Renderer {
 
     private boolean hasNewTextMessage;
     private boolean reloadTextures;
+    private boolean isPreviewMode;
 
     private int[] elevatorInteriorAudioClips = {
             R.raw.elevator_interior1,
@@ -184,6 +185,10 @@ public class ZangnamRenderer implements Renderer {
         this.reloadTextures = true;
     }
 
+    public void setIsPreviewMode(boolean previewMode) {
+        this.isPreviewMode = previewMode;
+    }
+
     @Override
 	public void onDrawFrame(GL10 gl) {
 		// clear Screen and Depth Buffer
@@ -199,11 +204,11 @@ public class ZangnamRenderer implements Renderer {
             float doorBoundary = 0.0f;
             long animationDuration = 0;
             long now = System.currentTimeMillis();
-            long timePlaying = now - (elevatorPausedMillis + elevatorOpenStartTime);
+            long timePlaying = now - elevatorOpenStartTime;
 
             // show elevator interior
             if (showElevatorInterior) {
-                if (WallpaperPreferences.playElevatorMusic(context)) {
+                if (WallpaperPreferences.playElevatorMusic(context) && !isPreviewMode) {
                     if (mMediaPlayer == null) {
                         mMediaPlayer = MediaPlayer.create(context, elevatorInteriorAudioClips[currentElevatorInteriorAudioClip]);
 
@@ -239,7 +244,7 @@ public class ZangnamRenderer implements Renderer {
                 drawElevatorInteriorFrame(gl, lastElevatorInteriorFrame);
 
             }  else if (showDanceInterior) {
-                if (WallpaperPreferences.playElevatorMusic(context) && !hasNewTextMessage) {
+                if (WallpaperPreferences.playElevatorMusic(context) && !hasNewTextMessage && !isPreviewMode) {
                     if (mMediaPlayer == null) {
                         mMediaPlayer = MediaPlayer.create(context, R.raw.dance);
 

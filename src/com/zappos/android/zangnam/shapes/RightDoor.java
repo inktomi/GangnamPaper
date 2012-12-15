@@ -1,6 +1,6 @@
-package com.ignition.apps.zangnam.shapes;
+package com.zappos.android.zangnam.shapes;
 
-import com.ignition.apps.zangnam.R;
+import com.zappos.android.zangnam.R;
 
 public class RightDoor extends Door {
 

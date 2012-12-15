@@ -1,4 +1,4 @@
-package com.ignition.apps.zangnam.utils;
+package com.zappos.android.zangnam.utils;
 
 import android.graphics.*;
 
