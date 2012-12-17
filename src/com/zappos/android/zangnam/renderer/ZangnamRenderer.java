@@ -69,6 +69,7 @@ public class ZangnamRenderer implements Renderer {
     private boolean hasNewTextMessage;
     private boolean reloadTextures;
     private boolean isPreviewMode;
+    private boolean playElevatorMusic;
 
     private int[] elevatorInteriorAudioClips = {
             R.raw.elevator_interior1,
@@ -208,7 +209,7 @@ public class ZangnamRenderer implements Renderer {
 
             // show elevator interior
             if (showElevatorInterior) {
-                if (WallpaperPreferences.playElevatorMusic(context) && !isPreviewMode) {
+                if (playElevatorMusic && !isPreviewMode) {
                     if (mMediaPlayer == null) {
                         mMediaPlayer = MediaPlayer.create(context, elevatorInteriorAudioClips[currentElevatorInteriorAudioClip]);
 
@@ -244,7 +245,7 @@ public class ZangnamRenderer implements Renderer {
                 drawElevatorInteriorFrame(gl, lastElevatorInteriorFrame);
 
             }  else if (showDanceInterior) {
-                if (WallpaperPreferences.playElevatorMusic(context) && !hasNewTextMessage && !isPreviewMode) {
+                if (playElevatorMusic && !hasNewTextMessage && !isPreviewMode) {
                     if (mMediaPlayer == null) {
                         mMediaPlayer = MediaPlayer.create(context, R.raw.dance);
 
@@ -411,6 +412,8 @@ public class ZangnamRenderer implements Renderer {
 
 		gl.glMatrixMode(GL10.GL_MODELVIEW); 	//Select The Modelview Matrix
 		gl.glLoadIdentity(); 					//Reset The Modelview Matrix
+
+        playElevatorMusic = WallpaperPreferences.playElevatorMusic(this.context);
     }
 
 	@Override

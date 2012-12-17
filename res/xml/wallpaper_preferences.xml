@@ -16,13 +16,21 @@
             android:summary="@string/color_filter_summary"
             android:persistent="true"
             alphaSlider="true"
-    />
+            />
 
     <Preference
             android:key="@string/color_filter_reset_key"
             android:title="@string/color_filter_reset_title"
             android:summary="@string/color_filter_reset_summary"
             android:persistent="false"
+            />
+
+    <CheckBoxPreference
+            android:key="@string/open_on_new_text_message_key"
+            android:title="@string/open_on_new_text_message_title"
+            android:summary="@string/open_on_new_text_message_summary"
+            android:persistent="true"
+            android:defaultValue="true"
             />
 
 </PreferenceScreen>

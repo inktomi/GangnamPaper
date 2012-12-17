@@ -60,7 +60,7 @@ public class ZangnamWallpaperService extends WallpaperService implements SharedP
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(SMS_ACTION)) {
+            if (intent.getAction().equals(SMS_ACTION) && WallpaperPreferences.newTextAlert(context)) {
                 ((ZangnamRenderer) sEngine.getRenderer()).newTextMessage();
             }
         }

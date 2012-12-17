@@ -8,6 +8,7 @@ public class WallpaperPreferences {
     public static final String SHARED_PREFS = "wallpaper_shared_prefs";
     public static final String COLOR_FILTER = "door_color_filter";
     public static final String ELEVATOR_MUSIC = "elevator_music";
+    public static final String TEXT_ALERT = "text_alert";
 
     public static int getDoorColorFilter(Context context) {
         return getSharedPreferences(context).getInt(COLOR_FILTER, 0);
@@ -19,6 +20,10 @@ public class WallpaperPreferences {
 
     public static boolean playElevatorMusic(Context context) {
         return getSharedPreferences(context).getBoolean(ELEVATOR_MUSIC, true);
+    }
+
+    public static boolean newTextAlert(Context context) {
+        return getSharedPreferences(context).getBoolean(TEXT_ALERT, true);
     }
 
     public static SharedPreferences getSharedPreferences(Context context) {

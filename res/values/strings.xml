@@ -14,4 +14,7 @@
     <string name="color_filter_reset_key">door_color_filter_reset</string>
     <string name="color_filter_reset_title">Remove Elevator Color Overlay</string>
     <string name="color_filter_reset_summary">Remove the elevator color overlay leaving the default elevator images.</string>
+    <string name="open_on_new_text_message_key">text_alert</string>
+    <string name="open_on_new_text_message_title">New Text Alert</string>
+    <string name="open_on_new_text_message_summary">Open elevator when you receive a new text message, displaying a new text alert badge.</string>
 </resources>
